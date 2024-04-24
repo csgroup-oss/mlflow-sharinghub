@@ -1,0 +1,27 @@
+Dockerfile
+
+# Byte-compiled
+**/__pycache__
+
+# Caches
+/.*_cache
+
+# Virtual envs
+/.tox
+/*venv*
+
+# Distribution / packaging
+/dist
+
+# Unit test / coverage reports
+/.coverage*
+/tests-reports
+
+# MLflow & MLflow SharingHub
+/data
+/mlruns
+/mlartifacts
+/_sessions
+
+# Environments
+/.env

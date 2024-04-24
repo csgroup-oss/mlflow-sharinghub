@@ -1,0 +1,8 @@
+-e .
+build~=1.2
+commitizen==3.24.0
+hatch~=1.9
+pre-commit~=3.7
+ruff==0.4.1
+tox~=4.14
+bpython==0.24
