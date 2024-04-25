@@ -35,15 +35,7 @@ pip install git+https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflo
 # pip install git+https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub@<tag>
 ```
 
-### Usage
-
-Being an MLflow plugin, in order to use it you'll have to install this project first. It is recommended to use a virtualenv.
-
-```bash
-pip install .
-# OR
-make install
-```
+### Configuration
 
 MLflow SharingHub is tied to a GitLab instance, you will need to configure it.
 
@@ -61,6 +53,18 @@ The client-id and client-secret can be created in your GitLab User settings (Pre
 You must create an "Application" with the scopes `api read_user openid profile email`.
 The callback URL is `http://localhost:5000/auth/authorize`.
 
+### Usage
+
+#### Local
+
+Being an MLflow plugin, in order to use it you'll have to install this project first. It is recommended to use a virtualenv.
+
+```bash
+pip install .
+# OR
+make install
+```
+
 Now you can run the mlflow server, you just need to add the parameter `--app-name sharinghub` to enable the plugin.
 
 Example:
@@ -73,6 +77,24 @@ And to enable hot-reload, add the `--dev`.
 
 ```bash
 mlflow server --app-name sharinghub --dev
+```
+
+> Note: the make targets `run` and `run-dev` should be preferred as they add more arguments.
+
+#### Docker
+
+Build the image:
+
+```bash
+docker build . -t mlflow-sharinghub:latest --build-arg VERSION=$(git rev-parse --short HEAD)
+# OR
+make docker-build
+```
+
+```bash
+docker run --rm -v $(pwd)/data:/home/mlflow/data -p 5000:5000 --env-file .env --name mlflow-sharinghub mlflow-sharinghub:latest
+# OR
+make docker-run
 ```
 
 ## Contributing
