@@ -1,0 +1,60 @@
+"""HTTP module (utils).
+
+Utilities related to HTTP requests and URLs.
+"""
+
+from typing import Literal
+from urllib.parse import parse_qsl, quote, urlencode, urlparse, urlunparse
+
+from flask import Response, make_response
+
+HTTP_ERROR_RANGE = (400, 600)
+HTTP_NOT_FOUND = 404
+
+HttpMethod = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+AuthType = Literal["Basic", "Bearer"]
+
+
+def is_error(status_code: int) -> bool:
+    """Return True if status_code is for an error, False otherwise."""
+    return HTTP_ERROR_RANGE[0] < status_code < HTTP_ERROR_RANGE[1]
+
+
+def clean_url(url: str, trailing_slash: bool = True) -> str:
+    """Clean URL, ensure trailing slash or not."""
+    u = urlparse(url)
+    if u.scheme in ["http", "https"] and u.netloc:
+        return url.removesuffix("/") + ("/" if trailing_slash else "")
+    msg = f"Not a valid URL: '{url}'"
+    raise ValueError(msg)
+
+
+def url_add_query_params(url: str, query_params: dict) -> str:
+    """Return URL with added query params from mapping."""
+    url_parts = list(urlparse(url))
+    url_parts[4] = urlencode(dict(parse_qsl(url_parts[4])) | query_params)
+    return urlunparse(url_parts)
+
+
+def urlsafe_path(path: str) -> str:
+    """Quote path characters for safe URL parameter."""
+    return quote(path, safe="")
+
+
+def make_auth_response(auth_type: AuthType, /, realm: str = "mlflow") -> Response:
+    """Returns HTTP 401 response with WWWW-Authenticate header."""
+    res = make_response(
+        "You are not authenticated. "
+        "Please use the Authorization header for bearer auth, "
+        "if you are using the MLflow client set MLFLOW_TRACKING_TOKEN."
+    )
+    res.status_code = 401
+    res.headers["WWW-Authenticate"] = f'{auth_type} realm="{realm}"'
+    return res
+
+
+def make_forbidden_response() -> Response:
+    """Returns HTTP 403 response."""
+    res = make_response("Permission denied")
+    res.status_code = 403
+    return res
