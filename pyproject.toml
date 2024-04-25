@@ -56,6 +56,9 @@ dynamic = ["version"]
 "Source" = "https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub"
 "Bug Tracker" = "https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues"
 
+[project.entry-points."mlflow.app"]
+sharinghub = "mlflow_sharinghub.app:create_app"
+
 # -----------------------------------------------
 # Build & Packaging
 
