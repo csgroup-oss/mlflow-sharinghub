@@ -14,3 +14,12 @@
 # Unit test / coverage reports
 /.coverage*
 /tests-reports
+
+# MLflow & MLflow SharingHub
+/data
+/mlruns
+/mlartifacts
+/_sessions
+
+# Environments
+/.env
