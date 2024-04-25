@@ -5,7 +5,11 @@ PIP=$(PYTHON) -mpip
 TOX=$(PYTHON) -mtox
 PRE_COMMIT=$(PYTHON) -mpre_commit
 
+TAG=latest
+MLFLOW_SERVER_ARGS=--backend-store-uri sqlite:///data/mlflow.db --artifacts-destination ./data/mlartifacts --app-name sharinghub
+
 .PHONY: default help release build install install-dev
+.PHONY: run run-dev docker-build docker-run
 .PHONY: shell test report lint lint-watch security
 .PHONY: clean pipeline pre-commit
 
@@ -24,6 +28,21 @@ install: ## Install in the current python env.
 
 install-dev: ## Install in editable mode inside the current python env with dev dependencies.
 	@$(PIP) install -r requirements-dev.txt
+
+-create-data-dir:
+	@mkdir -p data
+
+run: -create-data-dir ## Run mlflow server with sharinghub plugin
+	@$(PYTHON) -m mlflow server $(MLFLOW_SERVER_ARGS)
+
+run-dev: -create-data-dir ## Run dev mlflow server with sharinghub plugin
+	@$(PYTHON) -m mlflow server $(MLFLOW_SERVER_ARGS) --dev
+
+docker-build: ## Build docker image.
+	@docker build . -t mlflow-sharinghub:$(TAG) --build-arg VERSION=$(git rev-parse --short HEAD)
+
+docker-run: -create-data-dir ## Run docker image locally.
+	@docker run --rm -v $(PWD)/data:/home/mlflow/data -p 5000:5000 --env-file .env --name mlflow-sharinghub mlflow-sharinghub:$(TAG)
 
 shell: ## Open Python shell.
 	@$(PYTHON) -mbpython
