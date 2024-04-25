@@ -12,12 +12,11 @@
 [Bug Report](https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues/new?issuable_template=bug_report) **·**
 [Feature Request](https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues/new?issuable_template=feature_request)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem.
-Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis
-suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis
-autem vel eum iure reprehenderit, qui in una virtute ponunt et splendore
-nominis capti quid natura desideret. Tum vero.
+MLflow is a platform to streamline machine learning development, including tracking experiments, packaging code into reproducible runs, and sharing and deploying models.
+
+SharingHub is an AI-focused web portal designed to help you discover, navigate, and analyze your AI-related Git projects hosted on GitLab.
+
+This repository hosts a MLflow "app" plugin that integrates it with the GitLab authentication and permission system. The plugin also isolates the GitLab projects experiments and models from each others. The goal is to integrate this MLflow version
 
 ## Table of Contents
 
@@ -38,21 +37,43 @@ pip install git+https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflo
 
 ### Usage
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-sapientiam perveniri potest, non paranda nobis solum ea, sed fruenda
-etiam sapientia est.
+Being an MLflow plugin, in order to use it you'll have to install this project first. It is recommended to use a virtualenv.
 
-Probarent, omnes mihi Epicuri sententiae satis notae sunt. Atque eos,
-quos nominavi, cum inciderit, ut id meo arbitratu facerem, ante hoc
-tempus numquam est contemnit, qua qui affecti sunt in eadem causa sunt,
-qua ante quam nati, et ad.
+```bash
+pip install .
+# OR
+make install
+```
 
-Possit aut angere. Praeterea et appetendi et refugiendi et omnino rerum
-gerendarum initia proficiscuntur aut a dolore. Quod cum ita esset
-affecta, secundum non recte, si voluptas esset bonum, fuisse
-desideraturam. Idcirco enim non desideraret, quia, quod dolore caret, id
-in hominum consuetudine facilius fieri poterit et.
+MLflow SharingHub is tied to a GitLab instance, you will need to configure it.
+
+First, copy `.env.template` as `.env` and edit the content:
+
+```txt
+CACHE_TIMEOUT=30
+LOGIN_AUTO_REDIRECT=false
+GITLAB_URL=https://gitlab.si.c-s.fr
+GITLAB_OAUTH_CLIENT_ID=<client-id>
+GITLAB_OAUTH_CLIENT_SECRET=<client-secret>
+```
+
+The client-id and client-secret can be created in your GitLab User settings (Preferences).
+You must create an "Application" with the scopes `api read_user openid profile email`.
+The callback URL is `http://localhost:5000/auth/authorize`.
+
+Now you can run the mlflow server, you just need to add the parameter `--app-name sharinghub` to enable the plugin.
+
+Example:
+
+```bash
+mlflow server --app-name sharinghub
+```
+
+And to enable hot-reload, add the `--dev`.
+
+```bash
+mlflow server --app-name sharinghub --dev
+```
 
 ## Contributing
 
