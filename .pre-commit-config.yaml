@@ -20,6 +20,7 @@ repos:
       - id: check-toml
       - id: check-xml
       - id: check-yaml
+        exclude: "deploy/helm/mlflow-sharinghub/templates"
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer

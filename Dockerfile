@@ -23,9 +23,14 @@ ARG VERSION=latest
 
 LABEL version=${VERSION}
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV PATH=$PATH:/home/mlflow/.local/bin
+
+ENV MLFLOW_HOST=0.0.0.0
+ENV MLFLOW_PORT=5000
+ENV MLFLOW_BACKEND_STORE_URI=sqlite:///data/mlflow.db
+ENV MLFLOW_ARTIFACTS_DESTINATION=./data/mlartifacts
 
 # Install runtime requirements
 RUN apt-get update && \
@@ -49,4 +54,4 @@ VOLUME ["/home/mlflow/data"]
 
 EXPOSE 5000
 
-CMD [ "mlflow", "server", "--host", "0.0.0.0", "--backend-store-uri", "sqlite:///data/mlflow.db", "--artifacts-destination", "./data/mlartifacts", "--app-name", "sharinghub"]
+CMD [ "mlflow", "server", "--app-name", "sharinghub"]

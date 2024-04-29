@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mlflow-sharinghub.fullname" . }}
+  labels:
+    {{- include "mlflow-sharinghub.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mlflow-sharinghub.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mlflow-sharinghub.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mlflow-sharinghub.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mlflow-sharinghub.fullname" . }}
+                  key: secret-key
+            - name: MLFLOW_HOST
+              value: {{ .Values.mlflowSharinghub.host | quote }}
+            - name: MLFLOW_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: MLFLOW_WORKERS
+              value: {{ .Values.mlflowSharinghub.worker | quote }}
+            - name: LOGIN_AUTO_REDIRECT
+              value: "{{ .Values.mlflowSharinghub.loginAutoRedirect }}"
+            {{- if .Values.mlflowSharinghub.sharinghubUrl }}
+            - name: SHARINGHUB_URL
+              value: {{ .Values.mlflowSharinghub.sharinghubUrl }}
+            {{- if .Values.mlflowSharinghub.sharinghubStacCollection }}
+            - name: SHARINGHUB_STAC_COLLECTION
+              value: {{ .Values.mlflowSharinghub.sharinghubStacCollection }}
+            {{- end }}
+            - name: SHARINGHUB_AUTH_DEFAULT_TOKEN
+              value: "{{ .Values.mlflowSharinghub.sharinghubAuthDefaultToken }}"
+            {{- end }}
+            {{- if .Values.mlflowSharinghub.gitlabIntegration }}
+            - name: GITLAB_URL
+              value: {{ .Values.mlflowSharinghub.gitlabUrl }}
+            - name: GITLAB_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mlflow-sharinghub.fullname" . }}-gitlab
+                  key: client-id
+                  optional: true
+            - name: GITLAB_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mlflow-sharinghub.fullname" . }}-gitlab
+                  key: client-secret
+                  optional: true
+            - name: GITLAB_MANDATORY_TOPICS
+              value: {{ .Values.mlflowSharinghub.gitlabMandatoryTopics }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: store
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath | quote }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 5000
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 5000
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if or .Values.persistence.enabled .Values.extraVolumes }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: store
+          persistentVolumeClaim:
+            {{- if .Values.persistence.existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim }}
+            {{- else }}
+            claimName: {{ include "mlflow-sharinghub.fullname" . }}-store-pvc
+            {{- end }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
