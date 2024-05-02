@@ -90,7 +90,12 @@
         {% if not authenticated %}
         <a class="btn login" href="{{ url_for('auth.login', project=project_path) }}">Login</a>
         {% else %}
-        <p>You are already connected</p>
+        <p>
+          You are already connected
+          {% if session_auth and session_auth.get("userinfo") %}
+          as {{ session_auth["userinfo"]["name"] }} ({{ session_auth["userinfo"]["email"] }})
+          {% endif %}
+        </p>
         <div>
           <a class="btn back" href="{{ url_for('serve') }}">Back</a>
           <a class="btn logout" href="{{ url_for('auth.logout') }}">Logout</a>

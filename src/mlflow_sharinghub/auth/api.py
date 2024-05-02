@@ -51,6 +51,7 @@ def make_login_page() -> str:
         url_for=url_for,
         plugin_version=plugin_version,
         gitlab=AppConfig.GITLAB_URL,
+        session_auth=get_session_auth(),
         project_path=get_project_path(),
-        authenticated=bool(get_request_token()),
+        authenticated=get_request_token() is not None,
     )
