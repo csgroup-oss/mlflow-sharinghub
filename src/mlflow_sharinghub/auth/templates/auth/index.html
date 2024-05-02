@@ -59,7 +59,7 @@
         text-decoration: none;
         text-align: center;
       }
-      .btn.login, .btn.back {
+      .btn.login, .btn.home, .btn.back {
         background-color: #2272b4;
       }
 
@@ -97,7 +97,10 @@
           {% endif %}
         </p>
         <div>
-          <a class="btn back" href="{{ url_for('serve') }}">Back</a>
+          <a class="btn back" href="{{ url_for('serve') }}"> Back</a>
+          {% if project_path %}
+          <a class="btn home" href="/">Home</a>
+          {% endif %}
           <a class="btn logout" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
         {% endif %}
