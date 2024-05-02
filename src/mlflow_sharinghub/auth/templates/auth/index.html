@@ -55,10 +55,16 @@
         padding: 10px 20px;
         border-radius: 24px;
         color: #fff;
-        background-color: #2272b4;
         display: inline-block;
         text-decoration: none;
         text-align: center;
+      }
+      .btn.login, .btn.back {
+        background-color: #2272b4;
+      }
+
+      .btn.logout {
+        background-color: #9e102c;
       }
     </style>
   </head>
@@ -82,10 +88,13 @@
       </div>
       <div class="container">
         {% if not authenticated %}
-        <a class="btn" href="{{ url_for('auth.login', project=project_path) }}">Login</a>
+        <a class="btn login" href="{{ url_for('auth.login', project=project_path) }}">Login</a>
         {% else %}
         <p>You are already connected</p>
-        <a class="btn" href="{{ url_for('auth.logout') }}">Logout</a>
+        <div>
+          <a class="btn back" href="{{ url_for('serve') }}">Back</a>
+          <a class="btn logout" href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
         {% endif %}
       </div>
     </div>

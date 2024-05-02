@@ -1,5 +1,6 @@
 """After request hooks handlers."""
 
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -12,8 +13,10 @@ from mlflow.protos.model_registry_pb2 import (
 from mlflow.protos.service_pb2 import CreateExperiment, SearchExperiments, SearchRuns
 from mlflow.server.handlers import catch_mlflow_exception, get_endpoints
 
-from mlflow_sharinghub import filters, initializers
+from mlflow_sharinghub import filters, initializers, patch
 from mlflow_sharinghub.utils.http import is_error
+
+MAIN_JS_FILE_PATH = re.compile(r"/static-files/static/js/main.[a-z0-9]+.js")
 
 AFTER_REQUEST_PATH_HANDLERS = {
     # Search filters
@@ -45,4 +48,6 @@ def after_request_hook(resp: Response) -> Response:
         return resp
     if handler := AFTER_REQUEST_HANDLERS.get((request.path, request.method)):
         handler(resp)
+    elif MAIN_JS_FILE_PATH.search(request.path):
+        patch.alter_main_js(resp)
     return resp
