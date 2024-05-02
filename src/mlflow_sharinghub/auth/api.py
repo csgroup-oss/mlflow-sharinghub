@@ -23,7 +23,7 @@ def get_request_token() -> str | None:
         if token:
             return token
 
-    session_token = get_session_auth().get("token")
+    session_token = get_session_auth().get("access_token")
     if session_token:
         return session_token
 

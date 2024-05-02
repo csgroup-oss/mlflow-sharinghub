@@ -45,7 +45,9 @@ def authorize() -> Response:
     token = oauth.gitlab.authorize_access_token()
 
     session_auth = get_session_auth()
-    session_auth["token"] = token.get("access_token")
+    session_auth["access_token"] = token.get("access_token")
+    session_auth["refresh_token"] = token.get("refresh_token")
+    session_auth["userinfo"] = token.get("userinfo")
 
     return redirect(
         url_for("serve", _project=session_auth.get(_REDIRECT_PROJECT_SESSION_KEY))
@@ -56,5 +58,5 @@ def authorize() -> Response:
 def logout() -> Response:
     """Remove the token from the auth session."""
     session_auth = get_session_auth()
-    session_auth.pop("token", None)
+    session_auth.clear()
     return redirect(url_for("serve"))
