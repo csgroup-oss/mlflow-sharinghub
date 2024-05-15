@@ -7,6 +7,7 @@ from flask import Blueprint, Response, redirect, request
 from flask import url_for as flask_url_for
 
 from mlflow_sharinghub._internal.server import url_for
+from mlflow_sharinghub.config import AppConfig
 
 from .api import get_session_auth, make_login_page
 from .client import oauth
@@ -59,4 +60,6 @@ def logout() -> Response:
     """Remove the token from the auth session."""
     session_auth = get_session_auth()
     session_auth.clear()
+    if AppConfig.LOGIN_AUTO_REDIRECT:
+        return redirect(url_for("auth.index"))
     return redirect(url_for("serve"))
