@@ -1,0 +1,51 @@
+SharingHub Server Copyright 2024 CS GROUP - France
+
+This software is distributed under the Apache Software License (ASL) v2.0, see LICENSE
+file or http://www.apache.org/licenses/LICENSE-2.0 for details.
+
+This software includes code from many other open source projects. See below for details
+about the license of each project.
+
+
+## The Apache 2.0 License
+
+The following components are provided under the Apache 2.0 License (https://opensource.org/licenses/Apache-2.0).
+See project link for details.
+
+- https://github.com/Teemu/pytest-sugar
+- https://github.com/psf/requests
+
+## The MIT License
+
+The following components are provided under the MIT License (https://opensource.org/licenses/mit).
+See project link for details.
+
+- https://pyyaml.org/
+- https://github.com/pytest-dev/pytest
+- https://github.com/pytest-dev/pytest-cov
+- https://github.com/python/mypy
+- https://github.com/pre-commit/pre-commit
+- https://github.com/lepture/authlib
+- https://github.com/pypa/hatch
+- https://github.com/tox-dev/tox
+- https://github.com/pypa/setuptools
+- https://build.pypa.io/en/stable/
+
+
+## The BSD-3-Clause Licence
+
+The following components are provided under the BSD-3-Clause License (https://opensource.org/licenses/BSD-3-Clause).
+See project link for details.
+
+- https://github.com/pallets/flask
+- https://github.com/pallets-eco/cachelib
+- https://github.com/pallets-eco/flask-session
+- https://github.com/theskumar/python-dotenv
+
+## The Mozilla Public License 2.0
+
+The following components are provided under the Mozilla Public License 2.0 (https://opensource.org/license/mpl-2-0).
+See project link for details.
+
+- https://github.com/pytest-dev/pytest-html
+- https://github.com/pallets-eco/cachelib

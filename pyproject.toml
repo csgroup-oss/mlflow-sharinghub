@@ -52,9 +52,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-"Homepage" = "https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub"
-"Source" = "https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub"
-"Bug Tracker" = "https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues"
+"Homepage" = " https://github.com/csgroup-oss/mlflow-sharinghub"
+"Source" = " https://github.com/csgroup-oss/mlflow-sharinghub"
+"Bug Tracker" = "https://github.com/csgroup-oss/mlflow-sharinghub/issues"
 
 [project.entry-points."mlflow.app"]
 sharinghub = "mlflow_sharinghub.app:create_app"

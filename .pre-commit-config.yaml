@@ -68,3 +68,8 @@ repos:
         files: "^src"
         types_or: [python]
         language: python
+      - id: copyright-header
+        name: Copyright header
+        entry: ./scripts/copyright.py
+        types_or: [ python ]
+        language: python

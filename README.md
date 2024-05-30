@@ -8,9 +8,9 @@
 ![Stability](https://img.shields.io/badge/stability-experimental-orange?style=flat-square)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-orange?style=flat-square)
 
-[Merge Request](https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/merge_requests) **·**
-[Bug Report](https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues/new?issuable_template=bug_report) **·**
-[Feature Request](https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub/issues/new?issuable_template=feature_request)
+[Merge Request]( https://github.com/csgroup-oss/mlflow-sharinghub/merge_requests) **·**
+[Bug Report]( https://github.com/csgroup-oss/mlflow-sharinghub/issues/new?issuable_template=bug_report) **·**
+[Feature Request]( https://github.com/csgroup-oss/mlflow-sharinghub/issues/new?issuable_template=feature_request)
 
 MLflow is a platform to streamline machine learning development, including tracking experiments, packaging code into reproducible runs, and sharing and deploying models.
 
@@ -24,15 +24,15 @@ This repository hosts a MLflow "app" plugin that integrates it with the GitLab a
   - [Installation](#installation)
   - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
+- [Copyright and License](#copyright-and-license)
 
 ## Getting started
 
 ### Installation
 
 ```bash
-pip install git+https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub
-# pip install git+https://gitlab.si.c-s.fr/space_applications/mlops-services/mlflow-sharinghub@<tag>
+pip install git+ https://github.com/csgroup-oss/mlflow-sharinghub
+# pip install git+https://github.com/csgroup-oss/mlflow-sharinghub@<tag>
 ```
 
 ### Configuration
@@ -44,7 +44,7 @@ First, copy `.env.template` as `.env` and edit the content:
 ```txt
 CACHE_TIMEOUT=30
 LOGIN_AUTO_REDIRECT=false
-GITLAB_URL=https://gitlab.si.c-s.fr
+GITLAB_URL=https://gitlab.example.com
 GITLAB_OAUTH_CLIENT_ID=<client-id>
 GITLAB_OAUTH_CLIENT_SECRET=<client-secret>
 ```
@@ -100,11 +100,12 @@ make docker-run
 ## Contributing
 
 If you want to contribute to this project or understand how it works,
-please check [CONTRIBUTING.md](CONTRIBUTING.md).
+please check [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Any contribution is greatly appreciated.
 
-## License
+## Copyright and License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more
-information.
+Copyright 2024 `CS GROUP - France`
+
+**MLflow SharingHub**  is an open source software, distributed under the Apache License 2.0. See the [`LICENSE`](./LICENSE) file for more information.
