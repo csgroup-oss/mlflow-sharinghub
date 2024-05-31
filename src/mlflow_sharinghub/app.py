@@ -24,9 +24,9 @@ from wsgiref.types import StartResponse, WSGIEnvironment
 
 from flask import Flask, Response
 from flask_session import Session
-from mlflow.server import app
+from mlflow.server import app as mlflow_app
 
-from mlflow_sharinghub import auth, handlers
+from mlflow_sharinghub import auth, config, handlers
 
 
 class SharingHubDispatcher:
@@ -51,7 +51,7 @@ class SharingHubDispatcher:
         return self.app(environ, start_response)
 
 
-def create_app(app: Flask = app) -> Flask:
+def create_app(app: Flask = mlflow_app) -> Flask:
     """Create a wrapper flask app.
 
     Returns a flask app that handles root and project views routing
@@ -60,9 +60,7 @@ def create_app(app: Flask = app) -> Flask:
     Also adds authentication routes.
     """
     # Configure
-    from mlflow_sharinghub.config import AppConfig
-
-    app.config.from_object(AppConfig)
+    app.config.from_object(config.AppConfig)
 
     # Requests hooks
     app.before_request(handlers.before_request_hook)

@@ -187,6 +187,3 @@ ignore-variadic-names = true
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.ruff.lint.pylint]
-max-args = 6

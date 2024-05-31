@@ -27,7 +27,7 @@ _MANDATORY_KEYS = ["client_id", "client_secret", "server_metadata_url"]
 
 
 def _init_oauth() -> OAuth:
-    oauth = OAuth()
+    _oauth = OAuth()
 
     gitlab_openid_url = (
         (f"{AppConfig.GITLAB_URL.removesuffix('/')}/.well-known/openid-configuration")
@@ -41,7 +41,7 @@ def _init_oauth() -> OAuth:
     }
     gitlab_oauth_conf = {k: v for k, v in gitlab_oauth_conf.items() if v}
     if all(k in gitlab_oauth_conf for k in _MANDATORY_KEYS):
-        oauth.register(
+        _oauth.register(
             name="gitlab",
             client_kwargs={
                 "scope": "openid email read_user profile api",
@@ -52,7 +52,7 @@ def _init_oauth() -> OAuth:
     else:
         msg = "GitLab authentication not configured"
         raise ValueError(msg)
-    return oauth
+    return _oauth
 
 
 oauth = _init_oauth()

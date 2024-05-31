@@ -186,7 +186,7 @@ class GitlabClient:
             case "text" | _:
                 return response.text
 
-    def _send_request(
+    def _send_request(  # noqa: PLR0913
         self,
         url: str,
         *,
@@ -194,6 +194,7 @@ class GitlabClient:
         headers: dict[str, str] | None = None,
         query: dict[str, Any] | None = None,
         body: str | bytes | dict | None = None,
+        timeout: int | None = None,
     ) -> requests.Response:
         if query is None:
             query = {}
@@ -210,6 +211,8 @@ class GitlabClient:
         url = url_add_query_params(url, query)
         method = method.upper()
         headers = self.headers | headers
-        response = requests.request(method=method, url=url, headers=headers, data=body)
+        response = requests.request(
+            method=method, url=url, headers=headers, data=body, timeout=timeout
+        )
         response.raise_for_status()
         return response
