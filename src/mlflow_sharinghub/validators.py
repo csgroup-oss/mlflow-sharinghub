@@ -90,10 +90,17 @@ def can_create_for_project() -> bool:
     if not project:
         return False
 
-    # Patch name to avoid collision
-    request.json["name"] = f"{request.json['name']} ({project['id']})"
     # Will prevent sending a second request in _get_permission_for_project
     session_save_access_level(project)
+
+    suffix = f"({project['id']})"
+    if _m := _PROJECT_SUFFIX_PATTERN.search(request.json["name"]):
+        if _m.group().strip() != suffix:
+            # Experiment name was given a suffix for a different project
+            return False
+    else:
+        # Patch name to avoid collision
+        request.json["name"] = f"{request.json['name']} {suffix}"
 
     return get_permission_for_project(project_path).can_create
 
