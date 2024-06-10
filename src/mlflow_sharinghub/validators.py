@@ -96,11 +96,11 @@ def can_create_for_project() -> bool:
     suffix = f"({project['id']})"
     if _m := _PROJECT_SUFFIX_PATTERN.search(request.json["name"]):
         if _m.group().strip() != suffix:
-            # Experiment name was given a suffix for a different project
+            # Experiment name was given a suffix not corresponding to the project
             return False
     else:
-        # Patch name to avoid collision
-        request.json["name"] = f"{request.json['name']} {suffix}"
+        # Suffix is mandatory
+        return False
 
     return get_permission_for_project(project_path).can_create
 
