@@ -2,7 +2,6 @@
 
 PYTHON=python3
 PIP=$(PYTHON) -mpip
-TOX=$(PYTHON) -mtox
 PRE_COMMIT=$(PYTHON) -mpre_commit
 
 TAG=latest
@@ -15,7 +14,7 @@ MLFLOW_SERVER_ARGS=--backend-store-uri sqlite:///data/mlflow.db --artifacts-dest
 
 # ======================================================= #
 
-default: pipeline
+default: help
 
 release: ## Bump version, create tag and update CHANGELOG.
 	@$(PYTHON) -mcommitizen bump
@@ -48,7 +47,7 @@ shell: ## Open Python shell.
 	@$(PYTHON) -mbpython
 
 test: ## Invoke pytest to run automated tests.
-	@$(TOX)
+	@$(PYTHON) -mpytest
 
 report: ## Start http server to serve the test report and coverage.
 	@printf "Test report: http://localhost:9000\n"
@@ -60,9 +59,6 @@ lint: ## Lint python source code.
 
 lint-watch: ## Run ruff linter with --watch (ruff needs to be installed)
 	@$(PYTHON) -mruff check src --fix --watch
-
-security: ## Security check on project dependencies.
-	@$(TOX) -e $@
 
 clean: ## Clean temporary files, like python __pycache__, dist build, tests reports.
 	@find src tests -regex "^.*\(__pycache__\|\.py[co]\)$$" -delete

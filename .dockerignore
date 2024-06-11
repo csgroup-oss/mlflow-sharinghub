@@ -7,7 +7,6 @@ Dockerfile
 /.*_cache
 
 # Virtual envs
-/.tox
 /*venv*
 
 # Distribution / packaging
