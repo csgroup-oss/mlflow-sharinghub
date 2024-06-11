@@ -42,27 +42,17 @@ _PROJECT_SUFFIX_PATTERN = re.compile(r"\s+\(.+\)$")
 _EXPERIMENT_ID_PATTERN = re.compile(r"^(\d+)/")
 
 
-def _get_experiment_from_experiment_id_request_param() -> Experiment:
-    experiment_id = get_request_param("experiment_id")
-    return get_tracking_store().get_experiment(experiment_id)
-
-
-def _get_run_from_run_id_request_param() -> Run:
-    run_id = get_request_param("run_id")
-    return get_tracking_store().get_run(run_id)
-
-
-def _get_registered_model_from_registered_model_name_request_param() -> RegisteredModel:
-    registered_model_name = get_request_param("name")
-    return get_model_registry_store().get_registered_model(registered_model_name)
-
-
 def _can_change_name(new_name: str, old_name: str) -> bool:
     _m = _PROJECT_SUFFIX_PATTERN.search(new_name)
     new_name_suffix = _m.group().strip() if _m else None
     _m = _PROJECT_SUFFIX_PATTERN.search(old_name)
     old_name_suffix = _m.group().strip() if _m else None
     return new_name_suffix and new_name_suffix == old_name_suffix
+
+
+def _get_experiment_from_experiment_id_request_param() -> Experiment:
+    experiment_id = get_request_param("experiment_id")
+    return get_tracking_store().get_experiment(experiment_id)
 
 
 def _get_experiment_from_experiment_id_artifact_proxy() -> Experiment | None:
@@ -77,6 +67,16 @@ def _get_experiment_id_from_view_args() -> str | None:
         if m := _EXPERIMENT_ID_PATTERN.match(artifact_path):
             return m.group(1)
     return None
+
+
+def _get_run_from_run_id_request_param() -> Run:
+    run_id = get_request_param("run_id")
+    return get_tracking_store().get_run(run_id)
+
+
+def _get_registered_model_from_registered_model_name_request_param() -> RegisteredModel:
+    registered_model_name = get_request_param("name")
+    return get_model_registry_store().get_registered_model(registered_model_name)
 
 
 def can_create_for_project() -> bool:
