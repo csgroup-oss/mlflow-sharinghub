@@ -30,6 +30,8 @@ class AppConfig:
 
     # Flask conf
     SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_hex(16))
+    SESSION_COOKIE_NAME = "mlflow-session"
+    PERMANENT_SESSION_LIFETIME = int(os.getenv("PERMANENT_SESSION_LIFETIME", "7200"))
     SESSION_TYPE = "cachelib"
     SESSION_SERIALIZATION_FORMAT = "json"
     SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="_sessions")
