@@ -26,7 +26,7 @@ from flask import Flask, Response
 from flask_session import Session
 from mlflow.server import app as mlflow_app
 
-from mlflow_sharinghub import auth, config, handlers
+from mlflow_sharinghub import auth, config, hooks
 
 
 class SharingHubDispatcher:
@@ -63,8 +63,8 @@ def create_app(app: Flask = mlflow_app) -> Flask:
     app.config.from_object(config.AppConfig)
 
     # Requests hooks
-    app.before_request(handlers.before_request_hook)
-    app.after_request(handlers.after_request_hook)
+    app.before_request(hooks.before_request_hook)
+    app.after_request(hooks.after_request_hook)
 
     # Extra routes
     app.register_blueprint(auth.bp, url_prefix="/auth")

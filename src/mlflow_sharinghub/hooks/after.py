@@ -29,8 +29,9 @@ from mlflow.protos.model_registry_pb2 import (
 from mlflow.protos.service_pb2 import CreateExperiment, SearchExperiments, SearchRuns
 from mlflow.server.handlers import catch_mlflow_exception, get_endpoints
 
-from mlflow_sharinghub import filters, initializers, patch
 from mlflow_sharinghub.utils.http import is_error
+
+from .handlers import filters, initializers, patch
 
 MAIN_JS_FILE_PATH = re.compile(r"/static-files/static/js/main.[a-z0-9]+.js")
 

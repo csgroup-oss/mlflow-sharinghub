@@ -67,13 +67,14 @@ from mlflow.protos.service_pb2 import (
 )
 from mlflow.server.handlers import catch_mlflow_exception, get_endpoints
 
-from mlflow_sharinghub import validators
 from mlflow_sharinghub._internal.server import (
     is_proxy_artifact_path,
     is_unprotected_route,
 )
 from mlflow_sharinghub.auth.api import get_request_token, make_unauthorized_response
 from mlflow_sharinghub.utils.http import make_forbidden_response
+
+from .handlers import validators
 
 BEFORE_REQUEST_HANDLERS = {
     # Routes for experiments

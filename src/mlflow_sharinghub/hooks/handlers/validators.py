@@ -29,6 +29,7 @@ from mlflow_sharinghub._internal.store import (
     get_tracking_store,
 )
 from mlflow_sharinghub.auth import get_request_token
+from mlflow_sharinghub.clients.gitlab import GitlabClient
 from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.permissions import (
     get_permission_for_experiment,
@@ -36,7 +37,6 @@ from mlflow_sharinghub.permissions import (
     get_permission_for_registered_model,
     session_save_access_level,
 )
-from mlflow_sharinghub.utils.gitlab import GitlabClient
 
 _PROJECT_SUFFIX_PATTERN = re.compile(r"\s+\(.+\)$")
 _EXPERIMENT_ID_PATTERN = re.compile(r"^(\d+)/")

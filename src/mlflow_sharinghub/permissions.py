@@ -23,6 +23,7 @@ from mlflow.entities.model_registry import RegisteredModel
 
 from mlflow_sharinghub._internal.server import get_project_path
 from mlflow_sharinghub.auth import get_request_token
+from mlflow_sharinghub.clients.gitlab import GitlabClient
 from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.utils.gitlab import (
     DEVELOPER,
@@ -32,7 +33,6 @@ from mlflow_sharinghub.utils.gitlab import (
     NO_ACCESS,
     OWNER,
     REPORTER,
-    GitlabClient,
     GitlabREST_Project,
     GitlabRole,
 )
@@ -87,7 +87,7 @@ def session_save_access_level(project: GitlabREST_Project | None, /) -> GitlabRo
     """Store GitLab role access level for the project in the session."""
     user_role = NO_ACCESS
     if project:
-        user_role = GitlabRole.from_project(project)
+        user_role = GitlabRole.from_gitlab_project(project)
     _session_projects_access_level.set(
         project["path_with_namespace"], user_role.access_level
     )

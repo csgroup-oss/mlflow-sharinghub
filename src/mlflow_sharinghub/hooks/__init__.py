@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Handlers package."""
+"""Hooks package."""
 
 from .after import after_request_hook
 from .before import before_request_hook
