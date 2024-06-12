@@ -109,7 +109,9 @@ def get_permission_for_project(project_path: str) -> Permission:
         gitlab_client = GitlabClient(
             url=AppConfig.GITLAB_URL, token=get_request_token()
         )
-        project = gitlab_client.get_project(project_path)
+        project = gitlab_client.get_project(
+            project_path, topics=AppConfig.GITLAB_MANDATORY_TOPICS
+        )
         user_role = session_save_access_level(project)
     else:
         user_role = GitlabRole.from_access_level(project_access_level)

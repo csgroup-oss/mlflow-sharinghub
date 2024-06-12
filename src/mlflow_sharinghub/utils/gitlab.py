@@ -156,14 +156,19 @@ class GitlabClient:
         if headers:
             self.headers |= headers
 
-    def get_project(self, path: str) -> GitlabREST_Project | None:
+    def get_project(
+        self, path: str, topics: list[str] | None = None
+    ) -> GitlabREST_Project | None:
         """Retrieve the project from its path (with namespace) or None."""
         path = urlsafe_path(path)
         url = self._resolve_rest_api_url(
             f"/projects/{path}?simple=true",
         )
         try:
-            return self._request(url=url)
+            project: GitlabREST_Project = self._request(url=url)
+            if topics and not set(topics).issubset(project["topics"]):
+                return None
+            return project  # noqa: TRY300
         except requests.HTTPError as err:
             if err.response.status_code == HTTP_NOT_FOUND:
                 return None

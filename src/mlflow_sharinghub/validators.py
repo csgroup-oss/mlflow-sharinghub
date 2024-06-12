@@ -86,7 +86,9 @@ def can_create_for_project() -> bool:
         return False
 
     gitlab_client = GitlabClient(url=AppConfig.GITLAB_URL, token=get_request_token())
-    project = gitlab_client.get_project(project_path)
+    project = gitlab_client.get_project(
+        project_path, topics=AppConfig.GITLAB_MANDATORY_TOPICS
+    )
     if not project:
         return False
 
