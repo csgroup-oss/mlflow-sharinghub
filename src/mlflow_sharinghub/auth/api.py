@@ -58,6 +58,16 @@ def clear_auth_cache() -> None:
 def is_authenticated() -> bool:
     """Return True if user is authenticated."""
     request_auth = get_request_auth()
+    if request_auth and AppConfig.GITLAB_URL:
+        authenticated = _session_auth.get("gitlab")
+        if authenticated is None:
+            resp = requests.get(
+                clean_url(AppConfig.GITLAB_URL) + "/api/v4/user",
+                headers=request_auth.headers,
+                timeout=_AUTH_REQUEST_TIMEOUT,
+            )
+            authenticated = resp.status_code == HTTP_OK
+        return authenticated
     if (
         request_auth
         and AppConfig.SHARINGHUB_URL
