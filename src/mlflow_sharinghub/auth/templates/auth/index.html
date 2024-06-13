@@ -45,7 +45,7 @@
         margin-bottom: 40px;
       }
 
-      .gitlab-link {
+      .link {
         color: #008192;
         text-decoration: none;
       }
@@ -81,7 +81,13 @@
         <i>({{ plugin_version }})</i>
       </div>
       <div class="container">
-        <p>MLflow integrated with SharingHub, where you can find your experiments and registered models from your <a class="gitlab-link" href="{{ gitlab }}">GitLab</a> projects!</p>
+        {% if gitlab %}
+        <p>MLflow SharingHub is where you can find your experiments and registered models from your <a class="link" href="{{ gitlab }}">GitLab</a> projects!</p>
+        {% elif sharinghub %}
+        <p>MLflow integrated with <a class="link" href="{{ sharinghub }}">SharingHub</a>, where you can find your experiments and registered models!</p>
+        {% else %}
+        <p>Unexpected error? Please contact the administrator.</p>
+        {% endif %}
         {% if project_path %}
         <p><b>Project</b>: {{ project_path }}</p>
         {% endif %}
@@ -101,7 +107,9 @@
           {% if project_path %}
           <a class="btn home" href="/">Home</a>
           {% endif %}
+          {% if gitlab %}
           <a class="btn logout" href="{{ url_for('auth.logout') }}">Logout</a>
+          {% endif %}
         </div>
         {% endif %}
       </div>

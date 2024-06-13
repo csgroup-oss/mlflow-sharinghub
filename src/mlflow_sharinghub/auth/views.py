@@ -24,9 +24,14 @@ from flask import url_for as flask_url_for
 
 from mlflow_sharinghub._internal.server import url_for
 from mlflow_sharinghub.config import AppConfig
+from mlflow_sharinghub.utils.http import (
+    clean_url,
+    make_internal_error_response,
+    url_add_query_params,
+)
 
-from .api import get_session_auth, make_login_page
-from .client import oauth
+from .api import clear_auth_cache, get_session_auth, make_login_page
+from .client import GITLAB_CLIENT, oauth
 
 bp = Blueprint("auth", __name__, template_folder="templates")
 
@@ -46,14 +51,28 @@ def index() -> str:
 @bp.route("/login")
 def login() -> Response:
     """Login redirect to OpenID provider."""
+    clear_auth_cache()
     session_auth = get_session_auth()
+    project = request.args.get("project")
 
-    if project := request.args.get("project"):
+    if project:
         session_auth[_REDIRECT_PROJECT_SESSION_KEY] = project
     else:
         session_auth.pop(_REDIRECT_PROJECT_SESSION_KEY, None)
-    redirect_uri = flask_url_for("auth.authorize", _external=True)
-    return oauth.gitlab.authorize_redirect(redirect_uri)
+
+    if AppConfig.GITLAB_URL and (client := oauth.create_client(GITLAB_CLIENT)):
+        redirect_uri = flask_url_for("auth.authorize", _external=True)
+        return client.authorize_redirect(redirect_uri)
+
+    if AppConfig.SHARINGHUB_URL:
+        redirect_uri = clean_url(AppConfig.SHARINGHUB_URL + "/api/auth/login")
+        redirect_uri = url_add_query_params(
+            redirect_uri,
+            {"redirect_uri": url_for("serve", _external=True, _project=project)},
+        )
+        return redirect(redirect_uri)
+
+    return make_internal_error_response()
 
 
 @bp.route("/authorize")

@@ -37,21 +37,49 @@ pip install git+ https://github.com/csgroup-oss/mlflow-sharinghub
 
 ### Configuration
 
-MLflow SharingHub is tied to a GitLab instance, you will need to configure it.
+MLflow SharingHub can be configured with a GitLab instance, or a SharingHub instance.
 
-First, copy `.env.template` as `.env` and edit the content:
+#### For GitLab
+
+First, create a file named `.env` and edit the content:
 
 ```txt
-CACHE_TIMEOUT=30
+PROJECT_CACHE_TIMEOUT=30
 LOGIN_AUTO_REDIRECT=false
+
 GITLAB_URL=https://gitlab.example.com
 GITLAB_OAUTH_CLIENT_ID=<client-id>
 GITLAB_OAUTH_CLIENT_SECRET=<client-secret>
 ```
 
-The client-id and client-secret can be created in your GitLab User settings (Preferences).
+The `client-id` and `client-secret` can be created in your GitLab User settings (Preferences).
 You must create an "Application" with the scopes `api read_user openid profile email`.
 The callback URL is `http://localhost:5000/auth/authorize`.
+
+#### For SharingHub
+
+The configuration may vary depending on your instance config. First, create a file named `.env` and edit the content.
+
+If you have a default token configured:
+
+```txt
+PROJECT_CACHE_TIMEOUT=30
+LOGIN_AUTO_REDIRECT=false
+
+SHARINGHUB_URL=http://sharinghub.example.com
+SHARINGHUB_AUTH_DEFAULT_TOKEN=true
+```
+
+else:
+
+```txt
+PROJECT_CACHE_TIMEOUT=30
+LOGIN_AUTO_REDIRECT=false
+
+SHARINGHUB_URL=http://sharinghub.example.com
+```
+
+With this integration MLflow SharingHub will use the session cookie of SharingHub to interact with the SharingHub Server.
 
 ### Usage
 

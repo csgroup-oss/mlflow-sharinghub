@@ -19,12 +19,30 @@
 Authentication-related functions.
 """
 
+from dataclasses import dataclass, field
+
+import requests
 from flask import Response, make_response, redirect, render_template, request, session
 
 from mlflow_sharinghub import __version__ as plugin_version
 from mlflow_sharinghub._internal.server import get_project_path, url_for
 from mlflow_sharinghub.config import AppConfig
-from mlflow_sharinghub.utils.http import make_auth_response
+from mlflow_sharinghub.utils.http import HTTP_OK, clean_url, make_auth_response
+from mlflow_sharinghub.utils.session import TimedSessionStore
+
+_AUTH_REQUEST_TIMEOUT = 10
+
+_session_auth = TimedSessionStore[str, bool](
+    "auth", timeout=AppConfig.SHARINGHUB_AUTH_CACHE_TIMEOUT
+)
+
+
+@dataclass
+class RequestAuth:
+    """Wrap request authentication info for clients."""
+
+    headers: dict[str, str] = field(default_factory=dict)
+    cookies: dict[str, str] = field(default_factory=dict)
 
 
 def get_session_auth() -> dict:
@@ -32,17 +50,60 @@ def get_session_auth() -> dict:
     return session.setdefault("auth", {})
 
 
-def get_request_token() -> str | None:
-    """Retrieves the auth token, from authorization header or session."""
+def clear_auth_cache() -> None:
+    """Clear auth cache."""
+    return _session_auth.clear()
+
+
+def is_authenticated() -> bool:
+    """Return True if user is authenticated."""
+    request_auth = get_request_auth()
+    if (
+        request_auth
+        and AppConfig.SHARINGHUB_URL
+        and not AppConfig.SHARINGHUB_AUTH_DEFAULT_TOKEN
+    ):
+        authenticated = _session_auth.get("sharinghub")
+        if authenticated is None:
+            resp = requests.get(
+                clean_url(AppConfig.SHARINGHUB_URL) + "/api/auth/info",
+                cookies=request_auth.cookies,
+                timeout=_AUTH_REQUEST_TIMEOUT,
+            )
+            authenticated = resp.status_code == HTTP_OK
+            _session_auth.set("sharinghub", authenticated)
+        return authenticated
+    return request_auth is not None
+
+
+def get_request_auth() -> RequestAuth | None:
+    """Return auth details if user is authenticated."""
+    if bearer_token := _get_request_bearer_token():
+        return RequestAuth(headers={"Authorization": f"Bearer {bearer_token}"})
+
+    if AppConfig.GITLAB_URL and (
+        session_token := get_session_auth().get("access_token")
+    ):
+        return RequestAuth(headers={"Authorization": f"Bearer {session_token}"})
+
+    if AppConfig.SHARINGHUB_URL:
+        if session_cookie := request.cookies.get(AppConfig.SHARINGHUB_SESSION_COOKIE):
+            return RequestAuth(
+                cookies={AppConfig.SHARINGHUB_SESSION_COOKIE: session_cookie}
+            )
+
+        if AppConfig.SHARINGHUB_AUTH_DEFAULT_TOKEN:
+            return RequestAuth()
+
+    return None
+
+
+def _get_request_bearer_token() -> str | None:
+    """Retrieves the token from authorization header bearer."""
     if request.authorization and request.authorization.type == "bearer":
         token = request.authorization.token
         if token:
             return token
-
-    session_token = get_session_auth().get("access_token")
-    if session_token:
-        return session_token
-
     return None
 
 
@@ -67,7 +128,8 @@ def make_login_page() -> str:
         url_for=url_for,
         plugin_version=plugin_version,
         gitlab=AppConfig.GITLAB_URL,
+        sharinghub=AppConfig.SHARINGHUB_URL,
         session_auth=get_session_auth(),
         project_path=get_project_path(),
-        authenticated=get_request_token() is not None,
+        authenticated=is_authenticated(),
     )

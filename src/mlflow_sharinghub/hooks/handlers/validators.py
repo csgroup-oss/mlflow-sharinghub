@@ -28,8 +28,8 @@ from mlflow_sharinghub._internal.store import (
     get_model_registry_store,
     get_tracking_store,
 )
-from mlflow_sharinghub.auth import get_request_token
-from mlflow_sharinghub.clients.gitlab import GitlabClient
+from mlflow_sharinghub.auth import get_request_auth
+from mlflow_sharinghub.clients.factory import create_client
 from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.permissions import (
     get_permission_for_experiment,
@@ -85,15 +85,13 @@ def can_create_for_project() -> bool:
     if not project_path:
         return False
 
-    gitlab_client = GitlabClient(url=AppConfig.GITLAB_URL, token=get_request_token())
-    project = gitlab_client.get_project(
-        project_path, topics=AppConfig.GITLAB_MANDATORY_TOPICS
-    )
-    if not project:
+    client = create_client(request_auth=get_request_auth())
+    project = client.get_project(project_path)
+    if project:
+        # Will prevent sending a second request in _get_permission_for_project
+        session_save_access_level(project_path, project.role)
+    else:
         return False
-
-    # Will prevent sending a second request in _get_permission_for_project
-    session_save_access_level(project)
 
     suffix = f"({project['id']})"
     if _m := _PROJECT_SUFFIX_PATTERN.search(request.json["name"]):

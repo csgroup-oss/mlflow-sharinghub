@@ -23,6 +23,8 @@ from authlib.integrations.flask_client import OAuth
 
 from mlflow_sharinghub.config import AppConfig
 
+GITLAB_CLIENT = "gitlab"
+
 _MANDATORY_KEYS = ["client_id", "client_secret", "server_metadata_url"]
 
 
@@ -42,16 +44,14 @@ def _init_oauth() -> OAuth:
     gitlab_oauth_conf = {k: v for k, v in gitlab_oauth_conf.items() if v}
     if all(k in gitlab_oauth_conf for k in _MANDATORY_KEYS):
         _oauth.register(
-            name="gitlab",
+            name=GITLAB_CLIENT,
             client_kwargs={
                 "scope": "openid email read_user profile api",
                 "timeout": 10.0,
             },
             **gitlab_oauth_conf,
         )
-    else:
-        msg = "GitLab authentication not configured"
-        raise ValueError(msg)
+
     return _oauth
 
 

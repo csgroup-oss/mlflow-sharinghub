@@ -16,8 +16,20 @@
 
 """Auth package."""
 
-from .api import get_request_token
+from .api import (
+    RequestAuth,
+    get_request_auth,
+    is_authenticated,
+    make_unauthorized_response,
+)
 from .client import oauth
 from .views import bp
 
-__all__ = ["bp", "oauth", "get_request_token"]
+__all__ = [
+    "bp",
+    "oauth",
+    "get_request_auth",
+    "is_authenticated",
+    "make_unauthorized_response",
+    "RequestAuth",
+]

@@ -35,14 +35,31 @@ class AppConfig:
     SESSION_TYPE = "cachelib"
     SESSION_SERIALIZATION_FORMAT = "json"
     SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="_sessions")
-    # Extras conf
-    CACHE_TIMEOUT = float(os.getenv("CACHE_TIMEOUT", "300"))
+    # Project conf
+    PROJECT_CACHE_TIMEOUT = float(os.getenv("PROJECT_CACHE_TIMEOUT", "300"))
     PROJECT_TAG = os.getenv("PROJECT_TAG", "project")
+    # Auth conf
     LOGIN_AUTO_REDIRECT = os.getenv("LOGIN_AUTO_REDIRECT", "false").lower().strip() in [
         "1",
         "true",
     ]
-    GITLAB_URL = os.getenv("GITLAB_URL", "https://gitlab.com")
+    # SharingHub conf
+    SHARINGHUB_URL = os.getenv("SHARINGHUB_URL", None)
+    SHARINGHUB_SESSION_COOKIE = os.getenv(
+        "SHARINGHUB_SESSION_COOKIE", "sharinghub-session"
+    )
+    SHARINGHUB_AUTH_DEFAULT_TOKEN = os.getenv(
+        "SHARINGHUB_AUTH_DEFAULT_TOKEN", "false"
+    ).lower().strip() in [
+        "1",
+        "true",
+    ]
+    SHARINGHUB_AUTH_CACHE_TIMEOUT = float(
+        os.getenv("SHARINGHUB_AUTH_CACHE_TIMEOUT", "60")
+    )
+    SHARINGHUB_STAC_COLLECTION = os.getenv("SHARINGHUB_STAC_COLLECTION", "ai-model")
+    # GitLab conf
+    GITLAB_URL = os.getenv("GITLAB_URL", None)
     GITLAB_OAUTH_CLIENT_ID = os.getenv("GITLAB_OAUTH_CLIENT_ID", "")
     GITLAB_OAUTH_CLIENT_SECRET = os.getenv("GITLAB_OAUTH_CLIENT_SECRET", "")
     GITLAB_MANDATORY_TOPICS = (

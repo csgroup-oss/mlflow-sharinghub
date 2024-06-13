@@ -20,6 +20,7 @@ import re
 from collections.abc import Callable
 from typing import Any
 
+import requests
 from flask import Response, request
 from mlflow.protos.model_registry_pb2 import (
     CreateRegisteredModel,
@@ -29,7 +30,8 @@ from mlflow.protos.model_registry_pb2 import (
 from mlflow.protos.service_pb2 import CreateExperiment, SearchExperiments, SearchRuns
 from mlflow.server.handlers import catch_mlflow_exception, get_endpoints
 
-from mlflow_sharinghub.utils.http import is_error
+from mlflow_sharinghub.auth.api import make_unauthorized_response
+from mlflow_sharinghub.utils.http import HTTP_UNAUTHORIZED, is_error
 
 from .handlers import filters, initializers, patch
 
@@ -64,7 +66,12 @@ def after_request_hook(resp: Response) -> Response:
     if is_error(resp.status_code):
         return resp
     if handler := AFTER_REQUEST_HANDLERS.get((request.path, request.method)):
-        handler(resp)
+        try:
+            handler(resp)
+        except requests.HTTPError as err:
+            if err.response.status_code == HTTP_UNAUTHORIZED:
+                return make_unauthorized_response()
+            raise
     elif MAIN_JS_FILE_PATH.search(request.path):
         patch.alter_main_js(resp)
     return resp

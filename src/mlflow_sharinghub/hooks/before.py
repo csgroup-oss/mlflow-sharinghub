@@ -19,6 +19,7 @@
 from collections.abc import Callable
 from typing import Any
 
+import requests
 from flask import Response, request
 from mlflow.protos.model_registry_pb2 import (
     CreateModelVersion,
@@ -71,8 +72,8 @@ from mlflow_sharinghub._internal.server import (
     is_proxy_artifact_path,
     is_unprotected_route,
 )
-from mlflow_sharinghub.auth.api import get_request_token, make_unauthorized_response
-from mlflow_sharinghub.utils.http import make_forbidden_response
+from mlflow_sharinghub.auth import is_authenticated, make_unauthorized_response
+from mlflow_sharinghub.utils.http import HTTP_UNAUTHORIZED, make_forbidden_response
 
 from .handlers import validators
 
@@ -154,9 +155,18 @@ def before_request_hook() -> Response | None:
     if is_unprotected_route(request.path):
         return None
 
-    if not get_request_token():
+    if not is_authenticated():
         return make_unauthorized_response()
 
+    try:
+        return _request_validate()
+    except requests.HTTPError as err:
+        if err.response.status_code == HTTP_UNAUTHORIZED:
+            return make_unauthorized_response()
+        raise
+
+
+def _request_validate() -> Response | None:
     if validator := BEFORE_REQUEST_VALIDATORS.get((request.path, request.method)):
         if not validator():
             return make_forbidden_response()
@@ -164,5 +174,4 @@ def before_request_hook() -> Response | None:
         validator = _get_proxy_artifact_validator(request.method, request.view_args)
         if validator and not validator():
             return make_forbidden_response()
-
     return None

@@ -26,6 +26,8 @@ from flask import Response, make_response
 
 HTTP_ERROR_RANGE = (400, 600)
 HTTP_NOT_FOUND = 404
+HTTP_UNAUTHORIZED = 401
+HTTP_OK = 200
 
 HttpMethod = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
 AuthType = Literal["Basic", "Bearer"]
@@ -36,7 +38,7 @@ def is_error(status_code: int) -> bool:
     return HTTP_ERROR_RANGE[0] < status_code < HTTP_ERROR_RANGE[1]
 
 
-def clean_url(url: str, trailing_slash: bool = True) -> str:
+def clean_url(url: str, trailing_slash: bool = False) -> str:
     """Clean URL, ensure trailing slash or not."""
     u = urlparse(url)
     if u.scheme in ["http", "https"] and u.netloc:
@@ -71,6 +73,13 @@ def make_auth_response(auth_type: AuthType, /, realm: str = "mlflow") -> Respons
 
 def make_forbidden_response() -> Response:
     """Returns HTTP 403 response."""
-    res = make_response("Permission denied")
+    res = make_response("Permission denied.")
     res.status_code = 403
+    return res
+
+
+def make_internal_error_response() -> Response:
+    """Returns HTTP 500 response."""
+    res = make_response("Internal server error, something wrong happened.")
+    res.status_code = 500
     return res

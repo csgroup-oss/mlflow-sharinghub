@@ -19,6 +19,7 @@
 from flask import Response
 
 from mlflow_sharinghub._internal.server import get_project_path, url_for
+from mlflow_sharinghub.config import AppConfig
 
 _INJECT_JS = """
 window.onload = () => {{
@@ -28,12 +29,17 @@ window.onload = () => {{
     const divider = document.createElement("div");
     divider.className = githubLink.className;
     divider.style.borderRight = "solid 1px #e7f1fb"
-    headerLinks.appendChild(divider);
 
-    const logoutLink = githubLink.cloneNode();
-    logoutLink.href = "{logout_href}";
-    logoutLink.innerHTML = `<div style="color: #e7f1fb;"><span>Logout</span></div>`;
-    headerLinks.appendChild(logoutLink);
+    const logoutHref = "{logout_href}"
+    if (!!logoutHref.length) {{
+        const logoutLink = githubLink.cloneNode();
+        logoutLink.href = logoutHref;
+        logoutLink.innerHTML = `<div style="color: #e7f1fb;"><span>Logout</span></div>`;
+        headerLinks.appendChild(logoutLink);
+        if (divider.parentElement == null) {{
+            headerLinks.insertBefore(divider, logoutLink);
+        }}
+    }}
 
     const homeHref = "{home_href}";
     if (!!homeHref.length) {{
@@ -41,6 +47,9 @@ window.onload = () => {{
         homeLink.href = homeHref;
         homeLink.innerHTML = `<div style="color: #e7f1fb;"><span>Home</span></div>`;
         headerLinks.appendChild(homeLink);
+        if (divider.parentElement == null) {{
+            headerLinks.insertBefore(divider, homeLink);
+        }}
     }}
 }};
 """
@@ -51,7 +60,7 @@ def alter_main_js(resp: Response) -> None:
     project_path = get_project_path()
     inject_js = ";\n" + _INJECT_JS.format(
         home_href="/" if project_path else "",
-        logout_href=url_for("auth.logout"),
+        logout_href=url_for("auth.logout") if AppConfig.GITLAB_URL else "",
     )
 
     resp.direct_passthrough = False

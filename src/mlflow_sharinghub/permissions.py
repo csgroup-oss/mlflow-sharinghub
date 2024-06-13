@@ -22,8 +22,8 @@ from mlflow.entities import Experiment
 from mlflow.entities.model_registry import RegisteredModel
 
 from mlflow_sharinghub._internal.server import get_project_path
-from mlflow_sharinghub.auth import get_request_token
-from mlflow_sharinghub.clients.gitlab import GitlabClient
+from mlflow_sharinghub.auth import get_request_auth
+from mlflow_sharinghub.clients import create_client
 from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.utils.gitlab import (
     DEVELOPER,
@@ -33,13 +33,12 @@ from mlflow_sharinghub.utils.gitlab import (
     NO_ACCESS,
     OWNER,
     REPORTER,
-    GitlabREST_Project,
     GitlabRole,
 )
 from mlflow_sharinghub.utils.session import TimedSessionStore
 
 _session_projects_access_level = TimedSessionStore[str, int](
-    "projects", timeout=AppConfig.CACHE_TIMEOUT
+    "projects", timeout=AppConfig.PROJECT_CACHE_TIMEOUT
 )
 
 
@@ -83,15 +82,9 @@ _ROLES_PERMISSIONS = {
 }
 
 
-def session_save_access_level(project: GitlabREST_Project | None, /) -> GitlabRole:
+def session_save_access_level(project_path: str, role: GitlabRole) -> None:
     """Store GitLab role access level for the project in the session."""
-    user_role = NO_ACCESS
-    if project:
-        user_role = GitlabRole.from_gitlab_project(project)
-    _session_projects_access_level.set(
-        project["path_with_namespace"], user_role.access_level
-    )
-    return user_role
+    _session_projects_access_level.set(project_path, role.access_level)
 
 
 def _get_permission_from_tags(obj: Experiment | RegisteredModel) -> Permission:
@@ -106,13 +99,10 @@ def get_permission_for_project(project_path: str) -> Permission:
     """Return permission for project corresponding to given project_path."""
     project_access_level = _session_projects_access_level.get(project_path)
     if project_access_level is None:
-        gitlab_client = GitlabClient(
-            url=AppConfig.GITLAB_URL, token=get_request_token()
-        )
-        project = gitlab_client.get_project(
-            project_path, topics=AppConfig.GITLAB_MANDATORY_TOPICS
-        )
-        user_role = session_save_access_level(project)
+        client = create_client(request_auth=get_request_auth())
+        project = client.get_project(path=project_path)
+        user_role = project.role if project else NO_ACCESS
+        session_save_access_level(project_path, user_role)
     else:
         user_role = GitlabRole.from_access_level(project_access_level)
     return _ROLES_PERMISSIONS[user_role]

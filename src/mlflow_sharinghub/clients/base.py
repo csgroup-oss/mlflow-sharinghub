@@ -14,9 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Clients package."""
+"""Base protocol for project clients."""
 
-from .base import ProjectClient, ProjectInfo
-from .factory import create_client
+from dataclasses import dataclass
+from typing import Protocol, runtime_checkable
 
-__all__ = ["create_client", "ProjectClient", "ProjectInfo"]
+from mlflow_sharinghub.auth import RequestAuth
+from mlflow_sharinghub.utils.gitlab import GitlabRole
+
+
+@dataclass
+class ProjectInfo:
+    """User project info."""
+
+    id: int
+    path: str
+    role: GitlabRole
+
+
+@runtime_checkable
+class ProjectClient(Protocol):
+    """Project client with request methods."""
+
+    def __init__(self, url: str, request_auth: RequestAuth) -> None: ...
+
+    def get_project(self, path: str) -> ProjectInfo | None:
+        """Retrieve the project from its path (with namespace) or None."""

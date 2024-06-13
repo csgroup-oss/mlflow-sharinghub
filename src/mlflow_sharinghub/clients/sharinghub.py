@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""GitLab module (clients).
+"""SharingHub module (clients).
 
-Contains GitLab project client.
+Contains SharingHub project client.
 """
 
 import requests
 
 from mlflow_sharinghub.auth import RequestAuth
 from mlflow_sharinghub.config import AppConfig
-from mlflow_sharinghub.utils.gitlab import GitlabREST_Project, GitlabRole
+from mlflow_sharinghub.utils.gitlab import GitlabRole
 from mlflow_sharinghub.utils.http import (
     HTTP_NOT_FOUND,
     clean_url,
@@ -32,43 +32,43 @@ from mlflow_sharinghub.utils.http import (
 
 from .base import ProjectClient, ProjectInfo
 
-_TOPICS = AppConfig.GITLAB_MANDATORY_TOPICS
+_COLLECTION = AppConfig.SHARINGHUB_STAC_COLLECTION
 
 
-class GitlabClient(ProjectClient):
-    """Small GitLab client to interact with GitLab API."""
+class SharinghubClient(ProjectClient):
+    """Small SharingHub client to interact with SharingHub API."""
 
     def __init__(self, url: str, request_auth: RequestAuth) -> None:
         self.url = clean_url(url)
         self.request_auth = request_auth
 
         self.api_url = f"{self.url}/api"
-        self.rest_url = f"{self.api_url}/v4"
+        self.stac_url = f"{self.api_url}/stac"
         self.headers = request_auth.headers
         self.cookies = request_auth.cookies
 
     def get_project(self, path: str) -> ProjectInfo | None:
         """Retrieve the project from its path (with namespace) or None."""
         path = urlsafe_path(path)
-        url = self._resolve_rest_api_url(f"/projects/{path}?simple=true")
+        url = self._resolve_stac_url(stac_id=path)
         try:
             response = requests.get(
                 url=url, headers=self.headers, cookies=self.cookies, timeout=30
             )
             response.raise_for_status()
-            project_data: GitlabREST_Project = response.json()
-            if _TOPICS and not set(_TOPICS).issubset(project_data["topics"]):
-                return None
+            project_data: dict = response.json()
+            project_properties = project_data.get("properties", {})
             return ProjectInfo(
-                id=project_data["id"],
+                id=project_properties.get("sharinghub:id"),
                 path=path,
-                role=GitlabRole.from_gitlab_project(project_data),
+                role=GitlabRole.from_access_level(
+                    project_properties.get("sharinghub:access-level")
+                ),
             )
         except requests.HTTPError as err:
             if err.response.status_code == HTTP_NOT_FOUND:
                 return None
             raise
 
-    def _resolve_rest_api_url(self, endpoint: str) -> str:
-        endpoint = endpoint.removeprefix("/")
-        return f"{self.rest_url}/{endpoint}"
+    def _resolve_stac_url(self, stac_id: str) -> str:
+        return f"{self.stac_url}/collections/{_COLLECTION}/items/{stac_id}"

@@ -65,3 +65,7 @@ class TimedSessionStore[K, V]:
         if val:
             _, val = val
             self.set(key, val)
+
+    def clear(self) -> None:
+        """Clear store."""
+        self._get_store().clear()
