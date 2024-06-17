@@ -93,7 +93,7 @@ def can_create_for_project() -> bool:
     else:
         return False
 
-    suffix = f"({project['id']})"
+    suffix = f"({project.id})"
     if _m := _PROJECT_SUFFIX_PATTERN.search(request.json["name"]):
         if _m.group().strip() != suffix:
             # Experiment name was given a suffix not corresponding to the project
