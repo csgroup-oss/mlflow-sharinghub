@@ -88,20 +88,19 @@ def is_authenticated() -> bool:
 
 def get_request_auth() -> RequestAuth | None:
     """Return auth details if user is authenticated."""
-    if bearer_token := _get_request_bearer_token():
-        return RequestAuth(headers={"Authorization": f"Bearer {bearer_token}"})
-
-    if AppConfig.GITLAB_URL and (
-        session_token := get_session_auth().get("access_token")
-    ):
-        return RequestAuth(headers={"Authorization": f"Bearer {session_token}"})
+    if AppConfig.GITLAB_URL:
+        if bearer_token := _get_request_bearer_token():
+            return RequestAuth(headers={"Authorization": f"Bearer {bearer_token}"})
+        if session_token := get_session_auth().get("access_token"):
+            return RequestAuth(headers={"Authorization": f"Bearer {session_token}"})
 
     if AppConfig.SHARINGHUB_URL:
+        if bearer_token := _get_request_bearer_token():
+            return RequestAuth(headers={"X-Gitlab-Token": bearer_token})
         if session_cookie := request.cookies.get(AppConfig.SHARINGHUB_SESSION_COOKIE):
             return RequestAuth(
                 cookies={AppConfig.SHARINGHUB_SESSION_COOKIE: session_cookie}
             )
-
         if AppConfig.SHARINGHUB_AUTH_DEFAULT_TOKEN:
             return RequestAuth()
 
