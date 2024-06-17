@@ -23,7 +23,12 @@ import requests
 
 from mlflow_sharinghub.auth import RequestAuth
 from mlflow_sharinghub.config import AppConfig
-from mlflow_sharinghub.utils.gitlab import GitlabRole
+from mlflow_sharinghub.utils.gitlab import (
+    DEVELOPER,
+    GUEST,
+    MAINTAINER,
+    NO_ACCESS,
+)
 from mlflow_sharinghub.utils.http import (
     HTTP_NOT_FOUND,
     clean_url,
@@ -33,6 +38,13 @@ from mlflow_sharinghub.utils.http import (
 from .base import ProjectClient, ProjectInfo
 
 _COLLECTION = AppConfig.SHARINGHUB_STAC_COLLECTION
+
+_ACCESS_LEVEL_MAPPING = {
+    0: NO_ACCESS,
+    1: GUEST,
+    2: DEVELOPER,
+    3: MAINTAINER,
+}
 
 
 class SharinghubClient(ProjectClient):
@@ -58,12 +70,11 @@ class SharinghubClient(ProjectClient):
             response.raise_for_status()
             project_data: dict = response.json()
             project_properties = project_data.get("properties", {})
+            sharinghub_access_level = project_properties.get("sharinghub:access-level")
             return ProjectInfo(
                 id=project_properties.get("sharinghub:id"),
                 path=path,
-                role=GitlabRole.from_access_level(
-                    project_properties.get("sharinghub:access-level")
-                ),
+                role=_ACCESS_LEVEL_MAPPING.get(sharinghub_access_level, NO_ACCESS),
             )
         except requests.HTTPError as err:
             if err.response.status_code == HTTP_NOT_FOUND:
