@@ -56,6 +56,17 @@ dynamic = ["version"]
 "Source" = " https://github.com/csgroup-oss/mlflow-sharinghub"
 "Bug Tracker" = "https://github.com/csgroup-oss/mlflow-sharinghub/issues"
 
+[project.optional-dependencies]
+all = [
+    "mlflow_sharinghub[postgres,s3]",
+]
+postgres = [
+    "psycopg2~=2.9",
+]
+s3 = [
+    "boto3~=1.34",
+]
+
 [project.entry-points."mlflow.app"]
 sharinghub = "mlflow_sharinghub.app:create_app"
 
