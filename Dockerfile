@@ -5,9 +5,9 @@ WORKDIR /install
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install Git for VCS versioning
+# Install build requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git && \
+    apt-get install -y --no-install-recommends gcc git python3-dev libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy files needed for build
@@ -15,7 +15,7 @@ COPY .git .git
 COPY pyproject.toml README.md LICENSE src ./
 
 # Generate python dependencies wheels
-RUN pip wheel --no-cache-dir --wheel-dir /install/wheels .
+RUN pip wheel --no-cache-dir --wheel-dir /install/wheels .[all]
 
 FROM python:3.12-slim-bookworm
 
@@ -26,6 +26,11 @@ LABEL version=${VERSION}
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PATH=$PATH:/home/mlflow/.local/bin
+
+# Install runtime requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libpq5 && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN useradd -mrU -d /home/mlflow -s /bin/bash mlflow
 
