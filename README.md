@@ -22,7 +22,12 @@ This repository hosts a MLflow "app" plugin that integrates it with the GitLab a
 
 - [Getting started](#getting-started)
   - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [For GitLab](#for-gitlab)
+    - [For SharingHub](#for-sharinghub)
   - [Usage](#usage)
+    - [Local](#local)
+    - [Docker](#docker)
 - [Contributing](#contributing)
 - [Copyright and License](#copyright-and-license)
 
