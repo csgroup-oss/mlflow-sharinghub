@@ -62,6 +62,6 @@ class AppConfig:
     GITLAB_URL = os.getenv("GITLAB_URL", None)
     GITLAB_OAUTH_CLIENT_ID = os.getenv("GITLAB_OAUTH_CLIENT_ID", "")
     GITLAB_OAUTH_CLIENT_SECRET = os.getenv("GITLAB_OAUTH_CLIENT_SECRET", "")
-    GITLAB_MANDATORY_TOPICS = (
-        os.getenv("GITLAB_MANDATORY_TOPICS", "").strip().split(",")
+    GITLAB_MANDATORY_TOPICS = tuple(
+        t for t in os.getenv("GITLAB_MANDATORY_TOPICS", "").strip().split(",") if t
     )

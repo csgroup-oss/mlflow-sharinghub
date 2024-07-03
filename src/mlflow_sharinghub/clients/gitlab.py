@@ -32,7 +32,7 @@ from mlflow_sharinghub.utils.http import (
 
 from .base import ProjectClient, ProjectInfo
 
-_TOPICS = AppConfig.GITLAB_MANDATORY_TOPICS
+_TOPICS = [*AppConfig.GITLAB_MANDATORY_TOPICS]
 
 
 class GitlabClient(ProjectClient):
