@@ -23,18 +23,20 @@ from mlflow_sharinghub.config import AppConfig
 
 _INJECT_JS = """
 window.onload = () => {{
-    const headerLinks = document.getElementsByClassName("header-links")[0];
+    const header = document.getElementsByTagName("header")[0];
+    const headerLinks = header.children[header.children.length - 1];
     const githubLink = headerLinks.children[1];
 
     const divider = document.createElement("div");
     divider.className = githubLink.className;
-    divider.style.borderRight = "solid 1px #e7f1fb"
+    divider.style.borderRight = "solid 1px #e7f1fb";
+    divider.style.marginBottom = "15px";
 
     const logoutHref = "{logout_href}"
     if (!!logoutHref.length) {{
         const logoutLink = githubLink.cloneNode();
         logoutLink.href = logoutHref;
-        logoutLink.innerHTML = `<div style="color: #e7f1fb;"><span>Logout</span></div>`;
+        logoutLink.innerText = "Logout";
         headerLinks.appendChild(logoutLink);
         if (divider.parentElement == null) {{
             headerLinks.insertBefore(divider, logoutLink);
@@ -45,7 +47,7 @@ window.onload = () => {{
     if (!!homeHref.length) {{
         const homeLink = githubLink.cloneNode();
         homeLink.href = homeHref;
-        homeLink.innerHTML = `<div style="color: #e7f1fb;"><span>Home</span></div>`;
+        homeLink.innerText = "Home";
         headerLinks.appendChild(homeLink);
         if (divider.parentElement == null) {{
             headerLinks.insertBefore(divider, homeLink);
