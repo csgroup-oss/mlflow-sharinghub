@@ -13,8 +13,18 @@ The Apache 2.0 License
 The following components are provided under the Apache 2.0 License (https://opensource.org/licenses/Apache-2.0).
 See project link for details.
 
+- boto3: https://github.com/boto/boto3
 - mlflow: https://github.com/mlflow/mlflow
 - requests: https://github.com/psf/requests
+
+================================================================
+The GNU LGPL v3.0 License
+================================================================
+
+The following components are provided under the GNU LGPL v3.0 License (https://opensource.org/license/lgpl-3-0).
+See project link for details.
+
+- psycopg2: https://github.com/psycopg/psycopg2
 
 ================================================================
 The MIT License
