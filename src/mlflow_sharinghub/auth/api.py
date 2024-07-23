@@ -77,6 +77,7 @@ def is_authenticated() -> bool:
         if authenticated is None:
             resp = requests.get(
                 clean_url(AppConfig.SHARINGHUB_URL) + "/api/auth/info",
+                headers=request_auth.headers,
                 cookies=request_auth.cookies,
                 timeout=_AUTH_REQUEST_TIMEOUT,
             )
