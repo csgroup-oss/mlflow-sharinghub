@@ -36,7 +36,7 @@ class AppConfig:
     SESSION_SERIALIZATION_FORMAT = "json"
     SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="_sessions")
     # Project conf
-    PROJECT_CACHE_TIMEOUT = float(os.getenv("PROJECT_CACHE_TIMEOUT", "300"))
+    PROJECT_CACHE_TIMEOUT = float(os.getenv("PROJECT_CACHE_TIMEOUT", "30"))
     PROJECT_TAG = os.getenv("PROJECT_TAG", "project")
     # Auth conf
     LOGIN_AUTO_REDIRECT = os.getenv("LOGIN_AUTO_REDIRECT", "false").lower().strip() in [
