@@ -49,6 +49,34 @@ spec:
               value: {{ .Values.service.port | quote }}
             - name: MLFLOW_WORKERS
               value: {{ .Values.mlflowSharinghub.worker | quote }}
+            {{- if .Values.mlflowSharinghub.backendStoreUri }}
+            - name: MLFLOW_BACKEND_STORE_URI
+              value: {{ .Values.mlflowSharinghub.backendStoreUri | quote }}
+            {{- else if .Values.mlflowSharinghub.backendStoreUriSecret }}
+            - name: MLFLOW_BACKEND_STORE_URI
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mlflowSharinghub.existingSecret }}
+                  name: {{ .Values.mlflowSharinghub.existingSecret }}
+                  {{- else }}
+                  name: {{ template "mlflow-sharinghub.fullname" . }}
+                  {{- end }}
+                  key: backend-store-uri
+            {{- end }}
+            {{- if .Values.mlflowSharinghub.artifactsDestination }}
+            - name: MLFLOW_ARTIFACTS_DESTINATION
+              value: {{ .Values.mlflowSharinghub.artifactsDestination | quote }}
+            {{- else if .Values.mlflowSharinghub.artifactsDestinationSecret }}
+            - name: MLFLOW_ARTIFACTS_DESTINATION
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mlflowSharinghub.existingSecret }}
+                  name: {{ .Values.mlflowSharinghub.existingSecret }}
+                  {{- else }}
+                  name: {{ template "mlflow-sharinghub.fullname" . }}
+                  {{- end }}
+                  key: backend-store-uri
+            {{- end }}
             - name: LOGIN_AUTO_REDIRECT
               value: "{{ .Values.mlflowSharinghub.loginAutoRedirect }}"
             {{- if .Values.mlflowSharinghub.sharinghubUrl }}

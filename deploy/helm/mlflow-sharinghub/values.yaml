@@ -19,6 +19,11 @@ mlflowSharinghub:
   worker: "4"
   loginAutoRedirect: false
   existingSecret:
+  # Storage
+  backendStoreUri:
+  backendStoreUriSecret: false
+  artifactsDestination:
+  artifactsDestinationSecret: false
   # SharingHub integration
   sharinghubUrl:
   sharinghubStacCollection:
