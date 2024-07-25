@@ -57,7 +57,7 @@ spec:
             - name: SHARINGHUB_AUTH_DEFAULT_TOKEN
               value: "{{ .Values.mlflowSharinghub.sharinghubAuthDefaultToken }}"
             {{- end }}
-            {{- if .Values.mlflowSharinghub.gitlabIntegration }}
+            {{- if .Values.mlflowSharinghub.gitlabUrl }}
             - name: GITLAB_URL
               value: {{ .Values.mlflowSharinghub.gitlabUrl | quote }}
             - name: GITLAB_OAUTH_CLIENT_ID
@@ -65,15 +65,13 @@ spec:
                 secretKeyRef:
                   name: {{ template "mlflow-sharinghub.fullname" . }}-gitlab
                   key: client-id
-                  optional: true
             - name: GITLAB_OAUTH_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ template "mlflow-sharinghub.fullname" . }}-gitlab
                   key: client-secret
-                  optional: true
             - name: GITLAB_MANDATORY_TOPICS
-              value: {{ .Values.mlflowSharinghub.gitlabMandatoryTopics }}
+              value: {{ .Values.mlflowSharinghub.gitlabMandatoryTopics | quote }}
             {{- end }}
           ports:
             - name: http
