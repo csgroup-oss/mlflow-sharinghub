@@ -43,6 +43,11 @@ persistence:
   annotations:
     helm.sh/resource-policy: keep
 
+s3:
+  enabled: false
+  endpointUrl:
+  existingSecret:
+
 ## Array to add extra mounts (normally used with extraVolumes, evaluated as a template)
 ##
 extraVolumeMounts: []

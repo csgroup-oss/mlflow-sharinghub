@@ -77,6 +77,30 @@ spec:
                   {{- end }}
                   key: backend-store-uri
             {{- end }}
+            {{- if .Values.s3.enabled }}
+            {{- if .Values.s3.endpointUrl }}
+            - name: MLFLOW_S3_ENDPOINT_URL
+              value: {{ .Values.s3.endpointUrl | quote }}
+            {{- end }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.s3.existingSecret }}
+                  name: {{ .Values.s3.existingSecret }}
+                  {{- else }}
+                  name: {{ template "mlflow-sharinghub.fullname" . }}-s3
+                  {{- end }}
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.s3.existingSecret }}
+                  name: {{ .Values.s3.existingSecret }}
+                  {{- else }}
+                  name: {{ template "mlflow-sharinghub.fullname" . }}-s3
+                  {{- end }}
+                  key: secret-access-key
+            {{- end }}
             - name: LOGIN_AUTO_REDIRECT
               value: "{{ .Values.mlflowSharinghub.loginAutoRedirect }}"
             {{- if .Values.mlflowSharinghub.sharinghubUrl }}
