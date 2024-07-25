@@ -33,6 +33,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.mlflowSharinghub.debug }}
+          args: [ "mlflow", "server", "--app-name", "sharinghub", "--dev"]
+          {{- end }}
           env:
             - name: SECRET_KEY
               valueFrom:
@@ -49,7 +52,19 @@ spec:
               value: {{ .Values.service.port | quote }}
             - name: MLFLOW_WORKERS
               value: {{ .Values.mlflowSharinghub.worker | quote }}
-            {{- if .Values.mlflowSharinghub.backendStoreUri }}
+            {{- if .Values.postgresql.enabled }}
+            - name: MLFLOW_BACKEND_STORE_URI
+              {{- if .Values.postgresql.auth.existingSecret }}
+              values: {{ printf "postgresql://%s:$POSTGRES_PASSWORD@%s:5432/%s" .Values.postgresql.auth.username (include "postgresql.host" .) .Values.postgresql.auth.database }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: "postgresql-password"
+              {{- else }}
+              value: {{ printf "postgresql://%s:%s@%s:5432/%s" .Values.postgresql.auth.username .Values.postgresql.auth.password (include "postgresql.host" .) .Values.postgresql.auth.database }}
+              {{- end }}
+            {{- else if .Values.mlflowSharinghub.backendStoreUri }}
             - name: MLFLOW_BACKEND_STORE_URI
               value: {{ .Values.mlflowSharinghub.backendStoreUri | quote }}
             {{- else if .Values.mlflowSharinghub.backendStoreUriSecret }}

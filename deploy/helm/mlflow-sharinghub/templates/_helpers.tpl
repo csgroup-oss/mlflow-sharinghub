@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Generate postgres service host name according to postgres architecture (standalone or replication)
+*/}}
+{{- define "postgresql.host" -}}
+{{- if eq .Values.postgresql.architecture "replication" }}
+{{- printf "%s-postgresql-primary" .Release.Name }}
+{{- else }}
+{{- printf "%s-postgresql" .Release.Name }}
+{{- end }}
+{{- end }}

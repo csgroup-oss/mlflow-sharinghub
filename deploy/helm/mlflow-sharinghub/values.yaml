@@ -17,6 +17,7 @@ fullnameOverride: ""
 mlflowSharinghub:
   host: "0.0.0.0"
   worker: "4"
+  debug: false
   loginAutoRedirect: false
   existingSecret:
   # Storage
@@ -127,3 +128,19 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+postgresql:
+  enabled: false
+
+  auth:
+    postgresPassword: ""
+    username: "mlflow"
+    password: "mlflow"
+    database: "mlflow"
+    existingSecret: ""
+
+  persistence:
+    enabled: true
+    existingClaim: ""
+    storageClass: ""
+    size: 8Gi
