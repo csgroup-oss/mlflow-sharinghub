@@ -18,6 +18,7 @@ mlflowSharinghub:
   host: "0.0.0.0"
   worker: "4"
   loginAutoRedirect: false
+  existingSecret:
   # SharingHub integration
   sharinghubUrl:
   sharinghubStacCollection:
@@ -25,6 +26,7 @@ mlflowSharinghub:
   # GitLab integration
   gitlabUrl:
   gitlabMandatoryTopics:
+  gitlabOauthExistingSecret:
 
 persistence:
   enabled: true

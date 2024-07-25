@@ -37,7 +37,11 @@ spec:
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.mlflowSharinghub.existingSecret }}
+                  name: {{ .Values.mlflowSharinghub.existingSecret }}
+                  {{- else }}
                   name: {{ template "mlflow-sharinghub.fullname" . }}
+                  {{- end }}
                   key: secret-key
             - name: MLFLOW_HOST
               value: {{ .Values.mlflowSharinghub.host | quote }}
@@ -68,7 +72,11 @@ spec:
             - name: GITLAB_OAUTH_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.mlflowSharinghub.gitlabOauthExistingSecret }}
+                  name: {{ .Values.mlflowSharinghub.gitlabOauthExistingSecret }}
+                  {{- else }}
                   name: {{ template "mlflow-sharinghub.fullname" . }}-gitlab
+                  {{- end }}
                   key: client-secret
             - name: GITLAB_MANDATORY_TOPICS
               value: {{ .Values.mlflowSharinghub.gitlabMandatoryTopics | quote }}
