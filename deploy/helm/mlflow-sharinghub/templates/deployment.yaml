@@ -49,17 +49,17 @@ spec:
               value: "{{ .Values.mlflowSharinghub.loginAutoRedirect }}"
             {{- if .Values.mlflowSharinghub.sharinghubUrl }}
             - name: SHARINGHUB_URL
-              value: {{ .Values.mlflowSharinghub.sharinghubUrl }}
+              value: {{ .Values.mlflowSharinghub.sharinghubUrl | quote }}
             {{- if .Values.mlflowSharinghub.sharinghubStacCollection }}
             - name: SHARINGHUB_STAC_COLLECTION
-              value: {{ .Values.mlflowSharinghub.sharinghubStacCollection }}
+              value: {{ .Values.mlflowSharinghub.sharinghubStacCollection | quote }}
             {{- end }}
             - name: SHARINGHUB_AUTH_DEFAULT_TOKEN
               value: "{{ .Values.mlflowSharinghub.sharinghubAuthDefaultToken }}"
             {{- end }}
             {{- if .Values.mlflowSharinghub.gitlabIntegration }}
             - name: GITLAB_URL
-              value: {{ .Values.mlflowSharinghub.gitlabUrl }}
+              value: {{ .Values.mlflowSharinghub.gitlabUrl | quote }}
             - name: GITLAB_OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
