@@ -66,16 +66,6 @@ spec:
             {{- if .Values.mlflowSharinghub.artifactsDestination }}
             - name: MLFLOW_ARTIFACTS_DESTINATION
               value: {{ .Values.mlflowSharinghub.artifactsDestination | quote }}
-            {{- else if .Values.mlflowSharinghub.artifactsDestinationSecret }}
-            - name: MLFLOW_ARTIFACTS_DESTINATION
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.mlflowSharinghub.existingSecret }}
-                  name: {{ .Values.mlflowSharinghub.existingSecret }}
-                  {{- else }}
-                  name: {{ template "mlflow-sharinghub.fullname" . }}
-                  {{- end }}
-                  key: backend-store-uri
             {{- end }}
             {{- if .Values.s3.enabled }}
             {{- if .Values.s3.endpointUrl }}

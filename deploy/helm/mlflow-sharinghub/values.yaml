@@ -23,7 +23,6 @@ mlflowSharinghub:
   backendStoreUri:
   backendStoreUriSecret: false
   artifactsDestination:
-  artifactsDestinationSecret: false
   # SharingHub integration
   sharinghubUrl:
   sharinghubStacCollection:
