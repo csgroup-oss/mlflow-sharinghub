@@ -55,7 +55,7 @@ spec:
             {{- if .Values.postgresql.enabled }}
             - name: MLFLOW_BACKEND_STORE_URI
               {{- if .Values.postgresql.auth.existingSecret }}
-              values: {{ printf "postgresql://%s:$POSTGRES_PASSWORD@%s:5432/%s" .Values.postgresql.auth.username (include "postgresql.host" .) .Values.postgresql.auth.database }}
+              value: {{ printf "postgresql://%s:$POSTGRES_PASSWORD@%s:5432/%s" .Values.postgresql.auth.username (include "postgresql.host" .) .Values.postgresql.auth.database }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
