@@ -139,6 +139,10 @@ postgresql:
     database: "mlflow"
     existingSecret: ""
 
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+
   persistence:
     enabled: true
     existingClaim: ""
