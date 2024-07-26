@@ -60,7 +60,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.postgresql.auth.existingSecret }}
-                  key: "postgresql-password"
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
               {{- else }}
               value: {{ printf "postgresql://%s:%s@%s:5432/%s" .Values.postgresql.auth.username .Values.postgresql.auth.password (include "postgresql.host" .) .Values.postgresql.auth.database }}
               {{- end }}
