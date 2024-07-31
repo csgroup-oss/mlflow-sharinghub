@@ -46,6 +46,9 @@ spec:
             - {{ printf "postgresql://%s:$(POSTGRES_PASSWORD)@%s:5432/%s" .Values.postgresql.auth.username (include "postgresql.host" .) .Values.postgresql.auth.database }}
             {{- end }}
           env:
+            {{- if .Values.extraEnv }}
+            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- end }}
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
