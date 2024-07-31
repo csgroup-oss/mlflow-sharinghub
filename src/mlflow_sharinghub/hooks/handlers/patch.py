@@ -25,7 +25,14 @@ _INJECT_JS = """
 window.onload = () => {{
     const header = document.getElementsByTagName("header")[0];
     const headerLinks = header.children[header.children.length - 1];
+    const themeSpan = headerLinks.children[0];
+    const themeBtn = themeSpan.children[0];
     const githubLink = headerLinks.children[1];
+
+    themeSpan.hidden = true;
+    if (themeBtn.ariaChecked == "true") {{
+        themeBtn.click();
+    }}
 
     const divider = document.createElement("div");
     divider.className = githubLink.className;
