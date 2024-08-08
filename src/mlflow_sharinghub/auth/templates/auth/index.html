@@ -94,7 +94,7 @@
       </div>
       <div class="container">
         {% if not authenticated %}
-        <a class="btn login" href="{{ url_for('auth.login', project=project_path) }}">Login</a>
+        <a class="btn login" href="{{ url_for('auth.login') }}">Login</a>
         {% else %}
         <p>
           You are already connected
@@ -105,7 +105,7 @@
         <div>
           <a class="btn back" href="{{ url_for('serve') }}"> Back</a>
           {% if project_path %}
-          <a class="btn home" href="/">Home</a>
+          <a class="btn home" href="{{ url_for('home', _root=True) }}">Home</a>
           {% endif %}
           {% if gitlab %}
           <a class="btn logout" href="{{ url_for('auth.logout') }}">Logout</a>

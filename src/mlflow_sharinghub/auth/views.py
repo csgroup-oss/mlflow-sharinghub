@@ -20,7 +20,6 @@ Declare the blueprint for the views related to the authentication process.
 """
 
 from flask import Blueprint, Response, redirect, request
-from flask import url_for as flask_url_for
 
 from mlflow_sharinghub._internal.server import url_for
 from mlflow_sharinghub.config import AppConfig
@@ -61,14 +60,14 @@ def login() -> Response:
         session_auth.pop(_REDIRECT_PROJECT_SESSION_KEY, None)
 
     if AppConfig.GITLAB_URL and (client := oauth.create_client(GITLAB_CLIENT)):
-        redirect_uri = flask_url_for("auth.authorize", _external=True)
+        redirect_uri = url_for("auth.authorize", _root=True, _external=True)
         return client.authorize_redirect(redirect_uri)
 
     if AppConfig.SHARINGHUB_URL:
         redirect_uri = clean_url(AppConfig.SHARINGHUB_URL + "/api/auth/login")
         redirect_uri = url_add_query_params(
             redirect_uri,
-            {"redirect_uri": url_for("serve", _external=True, _project=project)},
+            {"redirect_uri": url_for("serve", _project=project, _external=True)},
         )
         return redirect(redirect_uri)
 

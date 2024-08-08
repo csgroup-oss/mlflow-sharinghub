@@ -80,21 +80,25 @@ def get_project_path() -> str | None:
     return request.environ.get("_PROJECT_PATH")
 
 
-def url_for(endpoint: str, _project: str | None = None, **kwargs: Any) -> str:
+def url_for(
+    endpoint: str, _project: str | None = None, _root: bool = False, **kwargs: Any
+) -> str:
     """Fix url resolve for project tracking route.
 
     Because of our route dispatching for project view the `url_for` of Flask
     don't resolve the correct url when in a project route, and point to the
     global view. This method takes it into account.
     """
-    url = flask_url_for(endpoint, **kwargs)
+    url = "/" if endpoint == "home" else flask_url_for(endpoint, **kwargs)
     url_parts = list(urlparse(url))
 
-    if not _project:
-        _project = get_project_path()
-
-    if _project:
+    # Patch URL with with project prefix if under project route
+    if not _root and (_project := _project or get_project_path()):
         prefix = f"/{_project}/tracking"
         url_parts[2] = prefix + url_parts[2]
+
+    # Patch URL with SCRIPT_NAME prefix if set in the headers (behind proxy route)
+    if script_name := request.environ.get("HTTP_X_SCRIPT_NAME"):
+        url_parts[2] = script_name + url_parts[2]
 
     return urlunparse(url_parts)

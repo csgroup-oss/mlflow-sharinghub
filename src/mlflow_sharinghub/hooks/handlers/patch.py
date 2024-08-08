@@ -68,7 +68,7 @@ def alter_main_js(resp: Response) -> None:
     """Fix the main js file of the built frontend."""
     project_path = get_project_path()
     inject_js = ";\n" + _INJECT_JS.format(
-        home_href="/" if project_path else "",
+        home_href=url_for("home", _root=True) if project_path else "",
         logout_href=url_for("auth.logout") if AppConfig.GITLAB_URL else "",
     )
 

@@ -127,7 +127,7 @@ def make_unauthorized_response() -> Response:
     if "mlflow" in request.user_agent.string.lower():
         return make_auth_response("Bearer")
     if AppConfig.LOGIN_AUTO_REDIRECT:
-        return redirect(url_for("auth.login", project=get_project_path()))
+        return redirect(url_for("auth.login"))
     return make_response(make_login_page(), 401)
 
 
