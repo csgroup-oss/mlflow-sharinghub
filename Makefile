@@ -9,7 +9,7 @@ MLFLOW_SERVER_ARGS=--backend-store-uri sqlite:///data/mlflow.db --artifacts-dest
 
 .PHONY: default help release build install install-dev
 .PHONY: run run-dev docker-build docker-run
-.PHONY: shell test report lint lint-watch security
+.PHONY: shell test report lint lint-watch
 .PHONY: clean pipeline pre-commit
 
 # ======================================================= #
@@ -17,7 +17,7 @@ MLFLOW_SERVER_ARGS=--backend-store-uri sqlite:///data/mlflow.db --artifacts-dest
 default: help
 
 release: ## Bump version, create tag and update CHANGELOG.
-	@$(PYTHON) -mcommitizen bump
+	@$(PYTHON) -mcommitizen bump --yes --changelog
 
 build: ## Build wheel and tar.gz in 'dist/'.
 	@$(PYTHON) -mbuild
@@ -64,7 +64,7 @@ clean: ## Clean temporary files, like python __pycache__, dist build, tests repo
 	@find src tests -regex "^.*\(__pycache__\|\.py[co]\)$$" -delete
 	@rm -rf dist tests-reports .coverage* .*_cache
 
-pipeline: security lint test build ## Run security, lint, test, build.
+pipeline: lint test build ## Run lint, test, build.
 
 pre-commit: ## Run all pre-commit hooks.
 	@$(PRE_COMMIT) run --all-files
@@ -72,7 +72,7 @@ pre-commit: ## Run all pre-commit hooks.
 
 # ======================================================= #
 
-HELP_COLUMN=11
+HELP_COLUMN=12
 help: ## Show this help.
 	@printf "\033[1m################\n#     Help     #\n################\033[0m\n"
 	@awk 'BEGIN {FS = ":.*##@"; printf "\n"} /^##@/ { printf "%s\n", substr($$0, 5) } ' $(MAKEFILE_LIST)

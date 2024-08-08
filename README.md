@@ -16,12 +16,11 @@ MLflow is a platform to streamline machine learning development, including track
 
 SharingHub is an AI-focused web portal designed to help you discover, navigate, and analyze your AI-related Git projects hosted on GitLab.
 
-This repository hosts a MLflow "app" plugin that integrates it with the GitLab authentication and permission system. The plugin also isolates the GitLab projects experiments and models from each others. The goal is to integrate this MLflow version
+This repository hosts a MLflow "app" plugin that integrates it with SharingHub and GitLab permission system. The plugin also isolates the experiments from each others per GitLab project.
 
 ## Table of Contents
 
 - [Getting started](#getting-started)
-  - [Installation](#installation)
   - [Configuration](#configuration)
     - [For GitLab](#for-gitlab)
     - [For SharingHub](#for-sharinghub)
@@ -49,13 +48,6 @@ This repository hosts a MLflow "app" plugin that integrates it with the GitLab a
 - [Copyright and License](#copyright-and-license)
 
 ## Getting started
-
-### Installation
-
-```bash
-pip install git+https://github.com/csgroup-oss/mlflow-sharinghub
-# pip install git+https://github.com/csgroup-oss/mlflow-sharinghub@<tag>
-```
 
 ### Configuration
 

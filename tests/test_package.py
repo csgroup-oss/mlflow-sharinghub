@@ -19,7 +19,7 @@
 
 def test_package_import():
     """Import package."""
-    import mlflow_sharinghub
+    import mlflow_sharinghub  # noqa: F401
 
 
 def test_package_version_is_defined():
