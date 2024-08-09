@@ -1,9 +1,9 @@
-FROM python:3.12-slim-bookworm as installer
+FROM python:3.12-slim-bookworm AS installer
 
 WORKDIR /install
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install build requirements
 RUN apt-get update && \
@@ -35,6 +35,7 @@ ENV MLFLOW_ARTIFACTS_DESTINATION=./data/mlartifacts
 # Install runtime requirements
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libpq5 && \
+    pip install --no-cache-dir --upgrade pip setuptools && \
     rm -rf /var/lib/apt/lists/*
 
 RUN useradd -mrU -d /home/mlflow -s /bin/bash mlflow
