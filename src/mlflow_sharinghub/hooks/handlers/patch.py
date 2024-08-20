@@ -24,41 +24,47 @@ from mlflow_sharinghub.config import AppConfig
 _INJECT_JS = """
 window.onload = () => {{
     const header = document.getElementsByTagName("header")[0];
-    const headerLinks = header.children[header.children.length - 1];
-    const themeSpan = headerLinks.children[0];
-    const themeBtn = themeSpan.children[0];
-    const githubLink = headerLinks.children[1];
+    const headerLeftLinks = header.children[1];
+    const headerRightLinks = header.children[header.children.length - 1];
 
+    const btnStyle = "font-size:16px;transform:translateY(-8px);";
+    const tagStyle = "font-size:12px;height:23px;" +
+                     "padding-right:5px;padding-left:5px;" +
+                     "transform:translateY(1px);";
+
+    const themeSpan = headerRightLinks.children[0];
+    const themeBtn = themeSpan.children[0];
     themeSpan.hidden = true;
     if (themeBtn.ariaChecked == "true") {{
         themeBtn.click();
     }}
 
-    const divider = document.createElement("div");
-    divider.className = githubLink.className;
-    divider.style.borderRight = "solid 1px #e7f1fb";
-    divider.style.marginBottom = "15px";
-
-    const logoutHref = "{logout_href}"
-    if (!!logoutHref.length) {{
-        const logoutLink = githubLink.cloneNode();
-        logoutLink.href = logoutHref;
-        logoutLink.innerText = "Logout";
-        headerLinks.appendChild(logoutLink);
-        if (divider.parentElement == null) {{
-            headerLinks.insertBefore(divider, logoutLink);
-        }}
-    }}
+    const btnLink = headerRightLinks.children[1].cloneNode();
 
     const homeHref = "{home_href}";
     if (!!homeHref.length) {{
-        const homeLink = githubLink.cloneNode();
+        const homeLink = document.createElement("a");
         homeLink.href = homeHref;
         homeLink.innerText = "Home";
-        headerLinks.appendChild(homeLink);
-        if (divider.parentElement == null) {{
-            headerLinks.insertBefore(divider, homeLink);
-        }}
+        homeLink.className = "du-bois-light-btn du-bois-light-btn-primary";
+        homeLink.style = btnStyle;
+        headerRightLinks.appendChild(homeLink);
+    }} else {{
+        const readOnlyTag = document.createElement("span");
+        readOnlyTag.className = "du-bois-light-btn du-bois-light-btn-danger";
+        readOnlyTag.style = tagStyle;
+        readOnlyTag.innerText = "read-only";
+        headerLeftLinks.appendChild(readOnlyTag);
+    }}
+
+    const logoutHref = "{logout_href}";
+    if (!!logoutHref.length) {{
+        const logoutLink = document.createElement("a");
+        logoutLink.href = logoutHref;
+        logoutLink.innerText = "Logout";
+        logoutLink.className = "du-bois-light-btn du-bois-light-btn-danger";
+        logoutLink.style = btnStyle;
+        headerRightLinks.appendChild(logoutLink);
     }}
 }};
 """
