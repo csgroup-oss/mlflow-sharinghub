@@ -16,7 +16,7 @@
 
 """Initializers module."""
 
-from flask import Response
+from flask import Response, request
 from mlflow.entities import ExperimentTag
 from mlflow.entities.model_registry import RegisteredModelTag
 from mlflow.protos.model_registry_pb2 import CreateRegisteredModel
@@ -46,7 +46,11 @@ def set_registered_model_project_tag(resp: Response) -> None:
     """Set the registered model project tag after CreateRegisteredModel."""
     response_message = CreateRegisteredModel.Response()
     parse_dict(resp.json, response_message)
-    name = response_message.registered_model.name
+    name = (
+        response_message.registered_model.name
+        if response_message.registered_model.name
+        else request.json["name"]
+    )
     project_path = get_project_path()
 
     tag = RegisteredModelTag(AppConfig.PROJECT_TAG, project_path)
