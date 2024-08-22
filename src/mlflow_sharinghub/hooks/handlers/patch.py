@@ -20,6 +20,7 @@ from flask import Response
 
 from mlflow_sharinghub._internal.server import get_project_path, url_for
 from mlflow_sharinghub.config import AppConfig
+from mlflow_sharinghub.utils.http import clean_url
 
 _INJECT_JS = """
 window.onload = () => {{
@@ -39,7 +40,16 @@ window.onload = () => {{
         themeBtn.click();
     }}
 
-    const btnLink = headerRightLinks.children[1].cloneNode();
+    const projectPath = "{project_path}";
+    if (!!projectPath.length) {{
+        const projectLink = document.createElement("a");
+        projectLink.href = "{project_view}";
+        projectLink.target = "_blank";
+        projectLink.innerText = projectPath;
+        projectLink.className = "du-bois-light-btn du-bois-light-btn-primary";
+        projectLink.style = btnStyle;
+        headerLeftLinks.appendChild(projectLink);
+    }}
 
     const homeHref = "{home_href}";
     if (!!homeHref.length) {{
@@ -73,9 +83,22 @@ window.onload = () => {{
 def alter_main_js(resp: Response) -> None:
     """Fix the main js file of the built frontend."""
     project_path = get_project_path()
+    if project_path and AppConfig.GITLAB_URL:
+        project_view = f"{clean_url(AppConfig.GITLAB_URL)}/{project_path}"
+    elif project_path and AppConfig.SHARINGHUB_URL:
+        base_url = clean_url(AppConfig.SHARINGHUB_URL)
+        collection = AppConfig.SHARINGHUB_STAC_COLLECTION
+        project_view = (
+            f"{base_url}/ui/#/api/stac/collections/"
+            f"{collection}/items/{project_path}"
+        )
+    else:
+        project_view = ""
     inject_js = ";\n" + _INJECT_JS.format(
         home_href=url_for("home", _root=True) if project_path else "",
         logout_href=url_for("auth.logout") if AppConfig.GITLAB_URL else "",
+        project_path=project_path if project_path else "",
+        project_view=project_view,
     )
 
     resp.direct_passthrough = False
