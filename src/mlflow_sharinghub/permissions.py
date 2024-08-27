@@ -71,7 +71,7 @@ _ROLES_PERMISSIONS = {
         priority=30, can_create=False, can_read=True, can_update=False, can_delete=False
     ),
     DEVELOPER: Permission(
-        priority=40, can_create=True, can_read=True, can_update=True, can_delete=False
+        priority=40, can_create=True, can_read=True, can_update=True, can_delete=True
     ),
     MAINTAINER: Permission(
         priority=50, can_create=True, can_read=True, can_update=True, can_delete=True
