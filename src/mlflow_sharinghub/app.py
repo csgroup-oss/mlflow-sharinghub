@@ -27,6 +27,7 @@ from flask_session import Session
 from mlflow.server import app as mlflow_app
 
 from mlflow_sharinghub import auth, config, hooks
+from mlflow_sharinghub.utils.http import HTTP_METHODS
 
 
 class SharingHubDispatcher:
@@ -93,7 +94,7 @@ def create_app(app: Flask = mlflow_app) -> Flask:
     wrapper_app.add_url_rule(
         "/<path:project_path>/tracking/<path:path>",
         view_func=_project_mlflow,
-        methods=["GET", "POST", "PUT", "DELETE"],
+        methods=HTTP_METHODS,
     )
     wrapper_app.add_url_rule(
         "/",
@@ -103,7 +104,7 @@ def create_app(app: Flask = mlflow_app) -> Flask:
     wrapper_app.add_url_rule(
         "/<path:path>",
         view_func=_main_mlflow,
-        methods=["GET", "POST", "PUT", "DELETE"],
+        methods=HTTP_METHODS,
     )
 
     return wrapper_app

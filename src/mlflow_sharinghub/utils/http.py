@@ -29,8 +29,22 @@ HTTP_NOT_FOUND = 404
 HTTP_UNAUTHORIZED = 401
 HTTP_OK = 200
 
-HttpMethod = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+HttpMethod = Literal[
+    "GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"
+]
 AuthType = Literal["Basic", "Bearer"]
+
+HTTP_METHODS = [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "DELETE",
+    "CONNECT",
+    "OPTIONS",
+    "TRACE",
+    "PATCH",
+]
 
 
 def is_error(status_code: int) -> bool:
