@@ -37,7 +37,7 @@ from mlflow_sharinghub.utils.http import (
 
 from .base import ProjectClient, ProjectInfo
 
-_COLLECTION = AppConfig.SHARINGHUB_STAC_COLLECTION
+_CATEGORY = AppConfig.SHARINGHUB_STAC_COLLECTION
 
 _ACCESS_LEVEL_MAPPING = {
     0: NO_ACCESS,
@@ -55,31 +55,33 @@ class SharinghubClient(ProjectClient):
         self.request_auth = request_auth
 
         self.api_url = f"{self.url}/api"
-        self.stac_url = f"{self.api_url}/stac"
+        self.checker_url = f"{self.api_url}/check"
         self.headers = request_auth.headers
         self.cookies = request_auth.cookies
 
     def get_project(self, path: str) -> ProjectInfo | None:
         """Retrieve the project from its path (with namespace) or None."""
         path = urlsafe_path(path)
-        url = self._resolve_stac_url(stac_id=path)
+        url = self._resolve_check_url(stac_id=path)
         try:
             response = requests.get(
                 url=url, headers=self.headers, cookies=self.cookies, timeout=30
             )
             response.raise_for_status()
             project_data: dict = response.json()
-            project_properties = project_data.get("properties", {})
-            sharinghub_access_level = project_properties.get("sharinghub:access-level")
+
+            if _CATEGORY not in project_data["categories"]:
+                return None
+
             return ProjectInfo(
-                id=project_properties.get("sharinghub:id"),
+                id=project_data["id"],
                 path=path,
-                role=_ACCESS_LEVEL_MAPPING.get(sharinghub_access_level, NO_ACCESS),
+                role=_ACCESS_LEVEL_MAPPING.get(project_data["access_level"], NO_ACCESS),
             )
         except requests.HTTPError as err:
             if err.response.status_code == HTTP_NOT_FOUND:
                 return None
             raise
 
-    def _resolve_stac_url(self, stac_id: str) -> str:
-        return f"{self.stac_url}/collections/{_COLLECTION}/items/{stac_id}"
+    def _resolve_check_url(self, stac_id: str) -> str:
+        return f"{self.checker_url}/{stac_id}?info=true"
