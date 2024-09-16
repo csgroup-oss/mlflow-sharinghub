@@ -23,8 +23,25 @@ from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.utils.http import clean_url
 
 _INJECT_JS = """
-window.onload = () => {{
-    const header = document.getElementsByTagName("header")[0];
+function waitForElm(selector) {{
+    return new Promise(resolve => {{
+        if (document.querySelector(selector)) {{
+            return resolve(document.querySelector(selector));
+        }}
+        const observer = new MutationObserver(mutations => {{
+            if (document.querySelector(selector)) {{
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }}
+        }});
+        observer.observe(document.body, {{
+            childList: true,
+            subtree: true
+        }});
+    }});
+}}
+
+waitForElm('header').then((header) => {{
     const headerLeftLinks = header.children[1];
     const headerRightLinks = header.children[header.children.length - 1];
 
@@ -76,7 +93,7 @@ window.onload = () => {{
         logoutLink.style = btnStyle;
         headerRightLinks.appendChild(logoutLink);
     }}
-}};
+}});
 """
 
 
