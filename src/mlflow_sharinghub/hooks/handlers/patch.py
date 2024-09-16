@@ -23,6 +23,14 @@ from mlflow_sharinghub.config import AppConfig
 from mlflow_sharinghub.utils.http import clean_url
 
 _INJECT_JS = """
+function isIframe () {{
+    try {{
+        return window.self !== window.top;
+    }} catch (e) {{
+        return true;
+    }}
+}}
+
 function waitForElm(selector) {{
     return new Promise(resolve => {{
         if (document.querySelector(selector)) {{
@@ -57,41 +65,43 @@ waitForElm('header').then((header) => {{
         themeBtn.click();
     }}
 
-    const projectPath = "{project_path}";
-    if (!!projectPath.length) {{
-        const projectLink = document.createElement("a");
-        projectLink.href = "{project_view}";
-        projectLink.target = "_blank";
-        projectLink.innerText = projectPath;
-        projectLink.className = "du-bois-light-btn du-bois-light-btn-primary";
-        projectLink.style = btnStyle;
-        headerLeftLinks.appendChild(projectLink);
-    }}
+    if (!isIframe()) {{
+        const projectPath = "{project_path}";
+        if (!!projectPath.length) {{
+            const projectLink = document.createElement("a");
+            projectLink.href = "{project_view}";
+            projectLink.target = "_blank";
+            projectLink.innerText = projectPath;
+            projectLink.className = "du-bois-light-btn du-bois-light-btn-primary";
+            projectLink.style = btnStyle;
+            headerLeftLinks.appendChild(projectLink);
+        }}
 
-    const homeHref = "{home_href}";
-    if (!!homeHref.length) {{
-        const homeLink = document.createElement("a");
-        homeLink.href = homeHref;
-        homeLink.innerText = "Home";
-        homeLink.className = "du-bois-light-btn du-bois-light-btn-primary";
-        homeLink.style = btnStyle;
-        headerRightLinks.appendChild(homeLink);
-    }} else {{
-        const readOnlyTag = document.createElement("span");
-        readOnlyTag.className = "du-bois-light-btn du-bois-light-btn-danger";
-        readOnlyTag.style = tagStyle;
-        readOnlyTag.innerText = "read-only";
-        headerLeftLinks.appendChild(readOnlyTag);
-    }}
+        const homeHref = "{home_href}";
+        if (!!homeHref.length) {{
+            const homeLink = document.createElement("a");
+            homeLink.href = homeHref;
+            homeLink.innerText = "Home";
+            homeLink.className = "du-bois-light-btn du-bois-light-btn-primary";
+            homeLink.style = btnStyle;
+            headerRightLinks.appendChild(homeLink);
+        }} else {{
+            const readOnlyTag = document.createElement("span");
+            readOnlyTag.className = "du-bois-light-btn du-bois-light-btn-danger";
+            readOnlyTag.style = tagStyle;
+            readOnlyTag.innerText = "read-only";
+            headerLeftLinks.appendChild(readOnlyTag);
+        }}
 
-    const logoutHref = "{logout_href}";
-    if (!!logoutHref.length) {{
-        const logoutLink = document.createElement("a");
-        logoutLink.href = logoutHref;
-        logoutLink.innerText = "Logout";
-        logoutLink.className = "du-bois-light-btn du-bois-light-btn-danger";
-        logoutLink.style = btnStyle;
-        headerRightLinks.appendChild(logoutLink);
+        const logoutHref = "{logout_href}";
+        if (!!logoutHref.length) {{
+            const logoutLink = document.createElement("a");
+            logoutLink.href = logoutHref;
+            logoutLink.innerText = "Logout";
+            logoutLink.className = "du-bois-light-btn du-bois-light-btn-danger";
+            logoutLink.style = btnStyle;
+            headerRightLinks.appendChild(logoutLink);
+        }}
     }}
 }});
 """
