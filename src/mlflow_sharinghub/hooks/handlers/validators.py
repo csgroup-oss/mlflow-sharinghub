@@ -88,7 +88,7 @@ def can_create_for_project() -> bool:
     client = create_client(request_auth=get_request_auth())
     project = client.get_project(project_path)
     if project:
-        # Will prevent sending a second request in _get_permission_for_project
+        # Will prevent sending a second request in get_permission_for_project
         session_save_access_level(project_path, project.role)
     else:
         return False

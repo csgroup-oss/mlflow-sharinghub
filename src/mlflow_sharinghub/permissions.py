@@ -82,9 +82,16 @@ _ROLES_PERMISSIONS = {
 }
 
 
-def session_save_access_level(project_path: str, role: GitlabRole) -> None:
-    """Store GitLab role access level for the project in the session."""
-    _session_projects_access_level.set(project_path, role.access_level)
+def get_permission_for_experiment(experiment: Experiment) -> Permission:
+    """Return permission for experiment."""
+    return _get_permission_from_tags(experiment)
+
+
+def get_permission_for_registered_model(
+    registered_model: RegisteredModel,
+) -> Permission:
+    """Return permission for registered model."""
+    return _get_permission_from_tags(registered_model)
 
 
 def _get_permission_from_tags(obj: Experiment | RegisteredModel) -> Permission:
@@ -97,9 +104,10 @@ def _get_permission_from_tags(obj: Experiment | RegisteredModel) -> Permission:
 
 def get_permission_for_project(project_path: str) -> Permission:
     """Return permission for project corresponding to given project_path."""
-    project_access_level = _session_projects_access_level.get(project_path)
+    project_access_level = session_get_access_level(project_path)
     if project_access_level is None:
-        client = create_client(request_auth=get_request_auth())
+        request_auth = get_request_auth()
+        client = create_client(request_auth=request_auth)
         project = client.get_project(path=project_path)
         user_role = project.role if project else NO_ACCESS
         session_save_access_level(project_path, user_role)
@@ -108,13 +116,11 @@ def get_permission_for_project(project_path: str) -> Permission:
     return _ROLES_PERMISSIONS[user_role]
 
 
-def get_permission_for_experiment(experiment: Experiment) -> Permission:
-    """Return permission for experiment."""
-    return _get_permission_from_tags(experiment)
+def session_get_access_level(project_path: str) -> int | None:
+    """Get project access level in GitLab from session."""
+    return _session_projects_access_level.get(project_path)
 
 
-def get_permission_for_registered_model(
-    registered_model: RegisteredModel,
-) -> Permission:
-    """Return permission for registered model."""
-    return _get_permission_from_tags(registered_model)
+def session_save_access_level(project_path: str, role: GitlabRole) -> None:
+    """Store GitLab role access level for the project in the session."""
+    _session_projects_access_level.set(project_path, role.access_level)
