@@ -28,6 +28,7 @@ from mlflow_sharinghub.utils.gitlab import (
     GUEST,
     MAINTAINER,
     NO_ACCESS,
+    REPORTER,
 )
 from mlflow_sharinghub.utils.http import (
     HTTP_NOT_FOUND,
@@ -42,8 +43,9 @@ _CATEGORY = AppConfig.SHARINGHUB_STAC_COLLECTION
 _ACCESS_LEVEL_MAPPING = {
     0: NO_ACCESS,
     1: GUEST,
-    2: DEVELOPER,
-    3: MAINTAINER,
+    2: REPORTER,
+    3: DEVELOPER,
+    4: MAINTAINER,
 }
 
 
