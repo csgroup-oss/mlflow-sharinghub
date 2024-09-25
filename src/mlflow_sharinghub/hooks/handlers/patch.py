@@ -65,6 +65,7 @@ waitForElm('header').then((header) => {{
     if (themeBtn.ariaChecked == "true") {{
         themeBtn.click();
     }}
+    headerRightLinks.querySelectorAll("a").forEach(a => a.target = "_blank");
 
     if (!isIframe()) {{
         const projectPath = "{project_path}";
