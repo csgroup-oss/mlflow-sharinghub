@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.0 (2024-10-02)
+
+### Bug fixes
+
+- Update access level mapping after sharinghub-server changes
+- Chrome compatibility, injected code via onload was not working
+
+### Features
+
+- UI: Change navbar right links to open in new tab
+- UI: Add open button if iframe
+- UI: Add refresh button if iframe
+- UI: Display links buttons if not in iframe
+
+### Internal
+
+- Improve permissions module
+
 ## 0.1.0 (2024-09-09)
 
 ### Features
